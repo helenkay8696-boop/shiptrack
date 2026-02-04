@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轨迹管理</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 200px;
+            background: #001529;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu {
+            padding: 12px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-item.active {
+            color: #fff;
+            background: #1890ff;
+        }
+
+        .menu-item .icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        /* 右侧内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 6px 16px;
+            font-size: 13px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #fff;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+            color: #fff;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .config-table th,
+        .config-table td {
+            padding: 10px 12px;
+            border: 1px solid #e8e8e8;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .config-table thead th {
+            background: #fafafa;
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .config-table tbody td {
+            color: #333;
+        }
+
+        .config-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        select,
+        input[type="text"],
+        input[type="datetime-local"] {
+            padding: 4px 8px;
+            font-size: 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 100%;
+            min-width: 80px;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #40a9ff;
+        }
+
+        .checkbox-cell {
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .row-number {
+            text-align: center;
+            color: #999;
+        }
+
+        .auto-text {
+            color: #333;
+            font-size: 13px;
+            display: block;
+            min-height: 18px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .switch input:checked+.slider {
+            background-color: #1890ff;
+        }
+
+        .switch input:checked+.slider:before {
+            transform: translateX(16px);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-add svg {
+            width: 18px;
+            height: 18px;
+            color: #1890ff;
+        }
+
+        .btn-add:hover svg {
+            color: #40a9ff;
+        }
+
+        .btn-delete svg {
+            width: 16px;
+            height: 16px;
+            color: #ff4d4f;
+        }
+
+        .btn-delete:hover svg {
+            color: #ff7875;
+        }
+
+        .action-cell {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #52c41a;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.error {
+            background: #ff4d4f;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 添加轨迹节点表单 */
+        .form-content {
+            padding: 40px 60px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-item {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label {
+            width: 120px;
+            flex-shrink: 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .form-label .required {
+            color: #ff4d4f;
+            margin-left: 2px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            background: #fff;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #40a9ff;
+        }
+
+        .form-input::placeholder {
+            color: #ff7875;
+        }
+
+        .readonly-field {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            background: #fafafa;
+            color: #333;
+            min-height: 40px;
+        }
+
+        .form-actions {
+            padding: 20px 60px;
+            border-top: 1px solid #e8e8e8;
+            text-align: right;
+        }
+
+        .demo-content {
+            padding: 40px;
+        }
+
+        .demo-tips {
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="layout">
+            <!-- 左侧导航栏 -->
+            <div class="sidebar">
+                <div class="sidebar-logo">📦 亚马逊shiptrack</div>
+                <div class="sidebar-menu">
+                    <div class="menu-item" :class="{ active: currentPage === 'config' }"
+                        @click="currentPage = 'config'">
+                        <span class="icon">⚙️</span>
+                        <span>轨迹状态配置</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'add' }" @click="currentPage = 'add'">
+                        <span class="icon">📍</span>
+                        <span>推送轨迹节点</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'demo' }" @click="currentPage = 'demo'">
+                        <span class="icon">🚀</span>
+                        <span>揽收推送字段</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'departure' }"
+                        @click="currentPage = 'departure'">
+                        <span class="icon">🚢</span>
+                        <span>离港推送字段</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'delivery' }"
+                        @click="currentPage = 'delivery'">
+                        <span class="icon">🚚</span>
+                        <span>派送推送字段</span>
+                    </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'booking' }"
+                        @click="currentPage = 'booking'">
+                        <span class="icon">📦</span>
+                        <span>约仓推送字段</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="main-content">
+                <div class="container">
+                    <!-- 配置页面 -->
+                    <div v-if="currentPage === 'config'">
+                        <div class="header">
+                            <h1>轨迹状态配置</h1>
+                            <div class="header-actions">
+                                <button class="btn" @click="resetConfig">重置</button>
+                                <button class="btn btn-primary" @click="saveConfig">保存配置</button>
+                            </div>
+                        </div>
+
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th class="action-cell">+</th>
+                                    <th>#</th>
+                                    <th>工作单状态</th>
+                                    <th>状态编码</th>
+                                    <th>轨迹名称(亚马逊)</th>
+                                    <th>轨迹编码(亚马逊)</th>
+                                    <th>节点</th>
+                                    <th>港前/港后</th>
+                                    <th>是否启用</th>
+                                    <th class="action-cell">删除</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in configItems" :key="item.id">
+                                    <td class="action-cell">
+                                        <button class="btn-icon btn-add" @click="addRow(index)" title="新增行">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="12" y1="8" x2="12" y2="16" />
+                                                <line x1="8" y1="12" x2="16" y2="12" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                    <td class="row-number">{{ index + 1 }}</td>
+                                    <td>
+                                        <select v-model="item.status" @change="onStatusChange(item)">
+                                            <option value="">请选择</option>
+                                            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
+                                                {{ opt.label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td><span class="auto-text">{{ item.statusCode || '-' }}</span></td>
+                                    <td>
+                                        <span v-if="isDefaultTrack(item.trackName)" class="auto-text">{{ item.trackName
+                                            }}</span>
+                                        <select v-else v-model="item.trackName" @change="onTrackNameChange(item)">
+                                            <option value="">请选择</option>
+                                            <option v-for="opt in trackNameOptions" :key="opt.value" :value="opt.value">
+                                                {{ opt.label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td><span class="auto-text">{{ item.trackCode || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.node || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.portType || '-' }}</span></td>
+                                    <td class="checkbox-cell">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="item.enabled"
+                                                @change="onEnabledChange(item)">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="action-cell">
+                                        <button v-if="!isDefaultTrack(item.trackName)" class="btn-icon btn-delete"
+                                            @click="deleteRow(index)" title="删除行">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path
+                                                    d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 添加轨迹节点页面 -->
+                    <div v-if="currentPage === 'add'">
+                        <div class="header">
+                            <h1>推送轨迹节点</h1>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-item">
+                                <label class="form-label">轨迹状态<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="nodeForm.trackStatus" disabled>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">轨迹名称</label>
+                                <div class="readonly-field">{{ nodeForm.trackNameDisplay || '-' }}</div>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">时间<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="nodeForm.time" disabled>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">国家<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="nodeForm.country" disabled>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">城市<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="nodeForm.city" disabled>
+                            </div>
+
+                            <div class="form-item" v-if="isYueCang">
+                                <label class="form-label" title="不能早于当日，不能超过未来90天">预估抵达时间<span
+                                        class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="nodeForm.estimatedArrival"
+                                    :min="todayDateTime" :max="maxFutureDateTime">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn" @click="resetNodeForm">取消</button>
+                            <button class="btn btn-primary" @click="submitNode">保存</button>
+                        </div>
+                    </div>
+
+                    <!-- 揽收推送字段页面 -->
+                    <div v-if="currentPage === 'demo'">
+                        <div class="header">
+                            <h1>揽收推送字段</h1>
+                            <div class="header-actions">
+                                <button class="btn btn-primary" @click="pushDemo">推送</button>
+                            </div>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-item">
+                                <label class="form-label" title="FBX订单-收货仓库">揽收仓库<span class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.warehouse" @change="onWarehouseChange">
+                                    <option value="">请选择</option>
+                                    <option v-for="w in warehouseOptions" :key="w.value" :value="w.value">{{ w.label }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-item" v-if="demoForm.warehouse">
+                                <label class="form-label">仓库信息</label>
+                                <div class="readonly-field">{{ warehouseInfo }}</div>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">干线级别<span class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.lineLevel">
+                                    <option value="">请选择</option>
+                                    <option value="economy">普线Economy</option>
+                                    <option value="standard">快线Standard</option>
+                                    <option value="express">特快线Express</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="收货渠道的运输方式">头程运输方式<span
+                                        class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.headTransport">
+                                    <option value="">请选择</option>
+                                    <option value="sea">海运</option>
+                                    <option value="air">空运</option>
+                                    <option value="rail">铁运</option>
+                                    <option value="land">陆运</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">尾程派送方式<span class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.tailDelivery">
+                                    <option value="">请选择</option>
+                                    <option value="truck">卡派</option>
+                                    <option value="express">快递派</option>
+                                    <option value="amazon">亚马逊自提</option>
+                                </select>
+                            </div>
+                            <!-- 卡派显示ISA预约号 -->
+                            <div class="form-item" v-if="demoForm.tailDelivery === 'truck'">
+                                <label class="form-label">ISA预约号<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="demoForm.isaNumber"
+                                    placeholder="请输入ISA预约号">
+                            </div>
+                            <!-- 快递派显示承运商和转单号 -->
+                            <div class="form-item" v-if="demoForm.tailDelivery === 'express'">
+                                <label class="form-label">承运商<span class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.carrier">
+                                    <option value="">请选择</option>
+                                    <option value="ups">UPS</option>
+                                    <option value="fedex">Fedex</option>
+                                </select>
+                            </div>
+                            <div class="form-item" v-if="demoForm.tailDelivery === 'express'">
+                                <label class="form-label">转单号<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="demoForm.trackingNumber"
+                                    placeholder="请输入转单号">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="即收货渠道时效最小值">最短运输时间<span
+                                        class="required">*</span></label>
+                                <input type="number" class="form-input" v-model="demoForm.minTransitDays" min="0"
+                                    max="20" step="0.1" placeholder="天">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="即收货渠道时效最大值">最长运输时间<span
+                                        class="required">*</span></label>
+                                <input type="number" class="form-input" v-model="demoForm.maxTransitDays" min="0"
+                                    max="20" step="0.1" placeholder="天">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="预计到达时间：揽收时间+收货渠道时效">EDD<span
+                                        class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="demoForm.edd">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="机场是三字码，海港是五字码">起运港<span
+                                        class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.originPort">
+                                    <option value="">请选择</option>
+                                    <option value="PVG">上海浦东机场 PVG</option>
+                                    <option value="CAN">广州白云机场 CAN</option>
+                                    <option value="SZX">深圳宝安机场 SZX</option>
+                                    <option value="HKG">香港国际机场 HKG</option>
+                                    <option value="CNSHA">上海港 CNSHA</option>
+                                    <option value="CNSHE">深圳蛇口港 CNSHE</option>
+                                    <option value="CNNGB">宁波港 CNNGB</option>
+                                    <option value="CNYTN">盐田港 CNYTN</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="机场是三字码，海港是五字码">目的港<span
+                                        class="required">*</span></label>
+                                <select class="form-input" v-model="demoForm.destPort">
+                                    <option value="">请选择</option>
+                                    <option value="LAX">洛杉矶机场 LAX</option>
+                                    <option value="JFK">纽约肯尼迪机场 JFK</option>
+                                    <option value="ORD">芝加哥机场 ORD</option>
+                                    <option value="USLAX">洛杉矶港 USLAX</option>
+                                    <option value="USLGB">长滩港 USLGB</option>
+                                    <option value="USNYC">纽约港 USNYC</option>
+                                    <option value="USSEA">西雅图港 USSEA</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">预计出发时间(ETA)<span class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="demoForm.estDepartureTime">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">预计到达时间(ETD)<span class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="demoForm.estArrivalTime">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 离港推送字段页面 -->
+                    <div v-if="currentPage === 'departure'">
+                        <div class="header">
+                            <h1>离港推送字段(如果与揽收填写一致，无需推送)</h1>
+                            <div class="header-actions">
+                                <button class="btn btn-primary" @click="pushDeparture">推送</button>
+                            </div>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-item">
+                                <label class="form-label">干线级别<span class="required">*</span></label>
+                                <select class="form-input" v-model="departureForm.lineLevel">
+                                    <option value="">请选择</option>
+                                    <option value="economy">普线Economy</option>
+                                    <option value="standard">快线Standard</option>
+                                    <option value="express">特快线Express</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="即收货渠道时效最小值">最短运输时间<span
+                                        class="required">*</span></label>
+                                <input type="number" class="form-input" v-model="departureForm.minTransitDays" min="0"
+                                    max="999" step="0.1" placeholder="天">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="即收货渠道时效最大值">最长运输时间<span
+                                        class="required">*</span></label>
+                                <input type="number" class="form-input" v-model="departureForm.maxTransitDays" min="0"
+                                    max="999" step="0.1" placeholder="天">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="预计到达时间：揽收时间+收货渠道时效">EDD<span
+                                        class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="departureForm.edd">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="机场是三字码，海港是五字码">起运港<span
+                                        class="required">*</span></label>
+                                <select class="form-input" v-model="departureForm.originPort">
+                                    <option value="">请选择</option>
+                                    <option value="PVG">上海浦东机场 PVG</option>
+                                    <option value="CAN">广州白云机场 CAN</option>
+                                    <option value="SZX">深圳宝安机场 SZX</option>
+                                    <option value="HKG">香港国际机场 HKG</option>
+                                    <option value="CNSHA">上海港 CNSHA</option>
+                                    <option value="CNSHE">深圳蛇口港 CNSHE</option>
+                                    <option value="CNNGB">宁波港 CNNGB</option>
+                                    <option value="CNYTN">盐田港 CNYTN</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label" title="机场是三字码，海港是五字码">目的港<span
+                                        class="required">*</span></label>
+                                <select class="form-input" v-model="departureForm.destPort">
+                                    <option value="">请选择</option>
+                                    <option value="LAX">洛杉矶机场 LAX</option>
+                                    <option value="JFK">纽约肯尼迪机场 JFK</option>
+                                    <option value="ORD">芝加哥机场 ORD</option>
+                                    <option value="USLAX">洛杉矶港 USLAX</option>
+                                    <option value="USLGB">长滩港 USLGB</option>
+                                    <option value="USNYC">纽约港 USNYC</option>
+                                    <option value="USSEA">西雅图港 USSEA</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">预计出发时间(ETA)<span class="required">*</span></label>
+                                <input type="datetime-local" class="form-input"
+                                    v-model="departureForm.estDepartureTime">
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">预计到达时间(ETD)<span class="required">*</span></label>
+                                <input type="datetime-local" class="form-input" v-model="departureForm.estArrivalTime">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 派送推送字段页面 -->
+                    <div v-if="currentPage === 'delivery'">
+                        <div class="header">
+                            <h1>派送推送字段(如果与揽收填写一致，无需推送)</h1>
+                            <div class="header-actions">
+                                <button class="btn btn-primary" @click="pushDelivery">推送</button>
+                            </div>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-item">
+                                <label class="form-label">尾程派送方式<span class="required">*</span></label>
+                                <select class="form-input" v-model="deliveryForm.tailDelivery">
+                                    <option value="">请选择</option>
+                                    <option value="truck">卡派</option>
+                                    <option value="express">快递派</option>
+                                    <option value="amazon">亚马逊自提</option>
+                                </select>
+                            </div>
+                            <!-- 卡派显示ISA预约号 -->
+                            <div class="form-item" v-if="deliveryForm.tailDelivery === 'truck'">
+                                <label class="form-label">ISA预约号<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="deliveryForm.isaNumber"
+                                    placeholder="请输入ISA预约号">
+                            </div>
+                            <!-- 快递派显示承运商和转单号 -->
+                            <div class="form-item" v-if="deliveryForm.tailDelivery === 'express'">
+                                <label class="form-label">承运商<span class="required">*</span></label>
+                                <select class="form-input" v-model="deliveryForm.carrier">
+                                    <option value="">请选择</option>
+                                    <option value="ups">UPS</option>
+                                    <option value="fedex">Fedex</option>
+                                </select>
+                            </div>
+                            <div class="form-item" v-if="deliveryForm.tailDelivery === 'express'">
+                                <label class="form-label">转单号<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="deliveryForm.trackingNumber"
+                                    placeholder="请输入转单号">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 约仓推送字段页面 -->
+                    <div v-if="currentPage === 'booking'">
+                        <div class="header">
+                            <h1>约仓推送字段(卡派/Amazon Freight 设置)</h1>
+                            <div class="header-actions">
+                                <button class="btn btn-primary" @click="pushBooking">推送</button>
+                            </div>
+                        </div>
+                        <div class="form-content">
+                            <div class="form-item">
+                                <label class="form-label">单号类型<span class="required">*</span></label>
+                                <select class="form-input" v-model="bookingForm.orderType">
+                                    <option value="">请选择</option>
+                                    <option value="isaId">入库预约号isaId</option>
+                                    <option value="amazonFreightOrderId">亚马逊货运订单号amazonFreightOrderId</option>
+                                </select>
+                            </div>
+                            <div class="form-item">
+                                <label class="form-label">单号<span class="required">*</span></label>
+                                <input type="text" class="form-input" v-model="bookingForm.orderNumber"
+                                    placeholder="请输入单号">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="toast.show" class="toast" :class="{ error: toast.isError }">{{ toast.message }}</div>
+    </div>
+
+    <script>
+        const { createApp, reactive, ref, computed, onMounted } = Vue
+
+        createApp({
+            setup() {
+                let idCounter = 1
+                const currentPage = ref('config')
+
+                const createEmptyRow = () => ({
+                    id: idCounter++,
+                    status: '',
+                    statusCode: '',
+                    trackName: '',
+                    trackCode: '',
+                    node: '',
+                    portType: '',
+                    enabled: false
+                })
+
+                const statusOptions = [
+                    { label: '已入库', value: 'warehoused' },
+                    { label: '已安排报关', value: 'customs_arranged' },
+                    { label: '已出口放行', value: 'export_released' },
+                    { label: '已离港-海空', value: 'departed_air' },
+                    { label: '已离港-陆铁', value: 'departed_rail' },
+                    { label: '已发车', value: 'dispatched' },
+                    { label: '已到港-空运', value: 'arrived_air' },
+                    { label: '已到港-海运', value: 'arrived_sea' },
+                    { label: '已到港-铁运/卡航', value: 'arrived_rail' },
+                    { label: '已安排清关', value: 'clearance_arranged' },
+                    { label: '已进口放行', value: 'import_released' },
+                    { label: '已拆柜', value: 'unpacked' },
+                    { label: '已约仓', value: 'warehouse_booked' },
+                    { label: '已送仓', value: 'delivered_warehouse' },
+                    { label: '分批送仓', value: 'batch_delivery' },
+                ]
+
+                const trackData = [
+                    { name: '揽收', code: 'AF/NS', node: '揽收', portType: '港前' },
+                    { name: '出口报关', code: 'K1/O1', node: '报关', portType: '港前' },
+                    { name: '出口放行', code: 'K2/O2', node: '报关', portType: '港前' },
+                    { name: '离港-海空', code: 'VD/NS', node: '干线', portType: '港前' },
+                    { name: '离港-陆铁', code: 'AL/NS', node: '干线', portType: '港前' },
+                    { name: '到港-海运', code: 'VA/NS', node: '干线', portType: '港后' },
+                    { name: '到港-空运', code: 'K1/AJ', node: '干线', portType: '港后' },
+                    { name: '到港 -陆铁', code: 'UR/NS', node: '干线', portType: '港后' },
+                    { name: '进口报关', code: 'K1/RD', node: '报关', portType: '港后' },
+                    { name: '进口放行', code: 'K2/RD', node: '报关', portType: '港后' },
+                    { name: '拆柜', code: 'X4/FN', node: '海外仓', portType: '港后' },
+                    { name: '约仓', code: 'AG/AG', node: '海外仓', portType: '港后' },
+                    { name: '送仓', code: 'D1/NS', node: '海外仓', portType: '港后' },
+                    { name: '分批送仓', code: '1X/NS', node: '海外仓', portType: '港后' },
+                ]
+
+                const defaultTrackNames = ['揽收', '出口放行', '离港-海空', '离港-陆铁', '到港-海运', '到港-空运', '到港 -陆铁', '进口放行', '拆柜', '约仓', '送仓']
+
+                const trackNameOptions = trackData
+                    .filter(t => !defaultTrackNames.includes(t.name))
+                    .map(t => ({ label: t.name, value: t.name }))
+
+                const createDefaultRows = () => {
+                    return defaultTrackNames.map(name => {
+                        const info = trackData.find(t => t.name === name)
+                        return {
+                            id: idCounter++,
+                            status: '',
+                            statusCode: '',
+                            trackName: name,
+                            trackCode: info ? info.code : '',
+                            node: info ? info.node : '',
+                            portType: info ? info.portType : '',
+                            enabled: true
+                        }
+                    })
+                }
+
+                const configItems = reactive(createDefaultRows())
+                const toast = reactive({ show: false, message: '', isError: false })
+
+                const showToast = (msg, isError = false) => {
+                    toast.message = msg
+                    toast.isError = isError
+                    toast.show = true
+                    setTimeout(() => { toast.show = false }, 2000)
+                }
+
+                const isDefaultTrack = (trackName) => defaultTrackNames.includes(trackName)
+
+                const onStatusChange = (item) => { item.statusCode = item.status }
+
+                const onTrackNameChange = (item) => {
+                    const info = trackData.find(t => t.name === item.trackName)
+                    if (info) {
+                        item.trackCode = info.code
+                        item.node = info.node
+                        item.portType = info.portType
+                    } else {
+                        item.trackCode = ''
+                        item.node = ''
+                        item.portType = ''
+                    }
+                }
+
+                const onEnabledChange = (changedItem) => {
+                    if (isDefaultTrack(changedItem.trackName)) {
+                        configItems.forEach(item => {
+                            if (isDefaultTrack(item.trackName)) {
+                                item.enabled = changedItem.enabled
+                            }
+                        })
+                    }
+                }
+
+                const addRow = (index) => { configItems.splice(index + 1, 0, createEmptyRow()) }
+                const deleteRow = (index) => { configItems.splice(index, 1) }
+
+                const loadConfig = () => {
+                    const saved = localStorage.getItem('track-config')
+                    if (saved) {
+                        const data = JSON.parse(saved)
+                        configItems.length = 0
+                        data.forEach(item => { configItems.push({ ...item, id: idCounter++ }) })
+                        if (configItems.length === 0) { configItems.push(createEmptyRow()) }
+                    }
+                }
+
+                const saveConfig = () => {
+                    const requiredTracks = ['揽收', '出口放行', '进口放行', '拆柜', '约仓', '送仓']
+                    const departGroup = ['离港-海空', '离港-陆铁']
+                    const arriveGroup = ['到港-海运', '到港-空运', '到港 -陆铁']
+
+                    const trackNames = configItems.filter(i => i.trackName).map(i => i.trackName)
+                    const duplicateTrackName = trackNames.find((name, idx) => trackNames.indexOf(name) !== idx)
+                    if (duplicateTrackName) {
+                        showToast(`轨迹名称 "${duplicateTrackName}" 重复`, true)
+                        return
+                    }
+
+                    const statuses = configItems.filter(i => i.status).map(i => i.status)
+                    const duplicateStatus = statuses.find((s, idx) => statuses.indexOf(s) !== idx)
+                    if (duplicateStatus) {
+                        const label = statusOptions.find(o => o.value === duplicateStatus)?.label || duplicateStatus
+                        showToast(`轨迹状态 "${label}" 重复`, true)
+                        return
+                    }
+
+                    for (const trackName of requiredTracks) {
+                        const item = configItems.find(i => i.trackName === trackName)
+                        if (!item || !item.status) {
+                            showToast(`请填写 "${trackName}" 的轨迹状态`, true)
+                            return
+                        }
+                    }
+
+                    if (!configItems.some(i => departGroup.includes(i.trackName) && i.status)) {
+                        showToast('请至少填写 "离港-海空" 或 "离港-陆铁" 其中一项', true)
+                        return
+                    }
+
+                    if (!configItems.some(i => arriveGroup.includes(i.trackName) && i.status)) {
+                        showToast('请至少填写 "到港" 类型其中一项', true)
+                        return
+                    }
+
+                    localStorage.setItem('track-config', JSON.stringify(configItems))
+                    showToast('✓ 配置已保存')
+                }
+
+                const resetConfig = () => {
+                    configItems.length = 0
+                    createDefaultRows().forEach(row => configItems.push(row))
+                    localStorage.removeItem('track-config')
+                    showToast('配置已重置')
+                }
+
+                // ========== 添加轨迹节点 ==========
+                const nodeForm = reactive({
+                    time: '自动带出',
+                    country: '自动带出',
+                    city: '自动带出',
+                    trackStatus: '自动带出',
+                    trackNameDisplay: '自动带出'
+                })
+
+                const countryOptions = [
+                    { label: '中国', value: 'CN' },
+                    { label: '美国', value: 'US' },
+                    { label: '英国', value: 'UK' },
+                    { label: '德国', value: 'DE' },
+                    { label: '日本', value: 'JP' },
+                    { label: '澳大利亚', value: 'AU' },
+                ]
+
+                const cityData = {
+                    CN: [{ label: '深圳', value: 'SZ' }, { label: '广州', value: 'GZ' }, { label: '上海', value: 'SH' }, { label: '北京', value: 'BJ' }, { label: '香港', value: 'HK' }],
+                    US: [{ label: '洛杉矶', value: 'LA' }, { label: '纽约', value: 'NY' }, { label: '芝加哥', value: 'CHI' }],
+                    UK: [{ label: '伦敦', value: 'LDN' }, { label: '曼彻斯特', value: 'MAN' }],
+                    DE: [{ label: '柏林', value: 'BER' }, { label: '法兰克福', value: 'FRA' }],
+                    JP: [{ label: '东京', value: 'TKY' }, { label: '大阪', value: 'OSK' }],
+                    AU: [{ label: '悉尼', value: 'SYD' }, { label: '墨尔本', value: 'MEL' }],
+                }
+
+                const cityOptions = ref(cityData['CN'])
+
+                const onCountryChange = () => {
+                    nodeForm.city = ''
+                    cityOptions.value = cityData[nodeForm.country] || []
+                }
+
+                const enabledTrackOptions = computed(() => {
+                    return configItems
+                        .filter(item => item.enabled && item.status && item.trackName)
+                        .map(item => ({
+                            status: item.status,
+                            statusLabel: statusOptions.find(o => o.value === item.status)?.label || item.status,
+                            trackName: item.trackName,
+                            trackCode: item.trackCode
+                        }))
+                })
+
+                const onNodeTrackStatusChange = () => {
+                    const selected = enabledTrackOptions.value.find(s => s.status === nodeForm.trackStatus)
+                    nodeForm.trackNameDisplay = selected ? `${selected.trackName} (${selected.trackCode})` : ''
+                }
+
+                // 是否选择了约仓
+                const isYueCang = computed(() => {
+                    const selected = enabledTrackOptions.value.find(s => s.status === nodeForm.trackStatus)
+                    return selected && selected.trackName === '约仓'
+                })
+
+                const resetNodeForm = () => {
+                    nodeForm.time = ''
+                    nodeForm.country = ''
+                    nodeForm.city = ''
+                    nodeForm.trackStatus = ''
+                    nodeForm.trackNameDisplay = ''
+                    nodeForm.estimatedArrival = ''
+                    cityOptions.value = []
+                }
+
+                const submitNode = () => {
+                    if (!nodeForm.time) { showToast('请选择时间', true); return }
+                    if (!nodeForm.country) { showToast('请选择国家', true); return }
+                    if (!nodeForm.city) { showToast('请选择城市', true); return }
+                    if (!nodeForm.trackStatus) { showToast('请选择轨迹状态', true); return }
+                    if (isYueCang.value && !nodeForm.estimatedArrival) { showToast('请选择预估抵达时间', true); return }
+
+                    const trackNodes = JSON.parse(localStorage.getItem('track-nodes') || '[]')
+                    trackNodes.push({ id: Date.now(), ...nodeForm, createdAt: new Date().toISOString() })
+                    localStorage.setItem('track-nodes', JSON.stringify(trackNodes))
+
+                    showToast('✓ 轨迹节点已添加')
+                    resetNodeForm()
+                }
+
+                onMounted(() => loadConfig())
+
+                // 当前时间（用于限制日期选择）
+                const currentDateTime = computed(() => {
+                    const now = new Date()
+                    return now.toISOString().slice(0, 16)
+                })
+
+                // 最小时间限制
+                const minDateTime = computed(() => {
+                    const selected = enabledTrackOptions.value.find(s => s.status === nodeForm.trackStatus)
+                    if (selected) {
+                        const trackName = selected.trackName
+                        let hoursLimit = 0
+
+                        // 揽收、离港、到港：24小时
+                        if (trackName === '揽收' || trackName.includes('离港') || trackName.includes('到港')) {
+                            hoursLimit = 24
+                        }
+                        // 出口放行、进口放行、拆柜、约仓：48小时
+                        else if (trackName === '出口放行' || trackName === '进口放行' || trackName === '拆柜' || trackName === '约仓') {
+                            hoursLimit = 48
+                        }
+                        // 送仓：72小时
+                        else if (trackName === '送仓') {
+                            hoursLimit = 72
+                        }
+
+                        if (hoursLimit > 0) {
+                            const minTime = new Date(Date.now() - hoursLimit * 60 * 60 * 1000)
+                            return minTime.toISOString().slice(0, 16)
+                        }
+                    }
+                    return ''
+                })
+
+                // 今日日期（用于预估抵达时间最小值）
+                const todayDateTime = computed(() => {
+                    const now = new Date()
+                    now.setHours(0, 0, 0, 0)
+                    return now.toISOString().slice(0, 16)
+                })
+
+                // 未来90天（用于预估抵达时间最大值）
+                const maxFutureDateTime = computed(() => {
+                    const future = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+                    return future.toISOString().slice(0, 16)
+                })
+
+                // ========== 揽收推送字段 ==========
+                const demoForm = reactive({
+                    warehouse: '',
+                    lineLevel: '',
+                    headTransport: '',
+                    tailDelivery: '',
+                    isaNumber: '',
+                    carrier: '',
+                    trackingNumber: '',
+                    minTransitDays: '',
+                    maxTransitDays: '',
+                    edd: '',
+                    originPort: '',
+                    destPort: '',
+                    estDepartureTime: '',
+                    estArrivalTime: ''
+                })
+
+                const warehouseOptions = [
+                    { label: '深圳仓', value: 'sz', country: '中国', province: '广东省', city: '深圳市' },
+                    { label: '广州仓', value: 'gz', country: '中国', province: '广东省', city: '广州市' },
+                    { label: '上海仓', value: 'sh', country: '中国', province: '上海市', city: '上海市' },
+                    { label: '洛杉矶仓', value: 'la', country: '美国', province: '加利福尼亚州', city: '洛杉矶' },
+                    { label: '纽约仓', value: 'ny', country: '美国', province: '纽约州', city: '纽约' },
+                ]
+
+                const warehouseInfo = computed(() => {
+                    const w = warehouseOptions.find(item => item.value === demoForm.warehouse)
+                    return w ? `${w.country} / ${w.province} / ${w.city}` : ''
+                })
+
+                const onWarehouseChange = () => {
+                    // 仓库变更时的处理（信息自动通过 computed 更新）
+                }
+
+                const addDemoNode = () => {
+                    if (!demoForm.warehouse) { showToast('请选择揽收仓库', true); return }
+                    if (!demoForm.headTransport) { showToast('请选择头程运输方式', true); return }
+                    if (!demoForm.tailDelivery) { showToast('请选择尾程派送方式', true); return }
+                    if (!demoForm.edd) { showToast('请选择EDD', true); return }
+
+                    showToast('✓ 轨迹节点已添加')
+                }
+
+                const pushDemo = () => {
+                    if (!demoForm.warehouse) { showToast('请选择揽收仓库', true); return }
+                    if (!demoForm.lineLevel) { showToast('请选择干线级别', true); return }
+                    if (!demoForm.headTransport) { showToast('请选择头程运输方式', true); return }
+                    if (!demoForm.tailDelivery) { showToast('请选择尾程派送方式', true); return }
+                    // 卡派需要ISA预约号
+                    if (demoForm.tailDelivery === 'truck' && !demoForm.isaNumber) {
+                        showToast('请输入ISA预约号', true); return
+                    }
+                    // 快递派需要承运商和转单号
+                    if (demoForm.tailDelivery === 'express') {
+                        if (!demoForm.carrier) { showToast('请选择承运商', true); return }
+                        if (!demoForm.trackingNumber) { showToast('请输入转单号', true); return }
+                    }
+                    if (!demoForm.minTransitDays) { showToast('请输入最短运输时间', true); return }
+                    if (!demoForm.maxTransitDays) { showToast('请输入最长运输时间', true); return }
+                    if (parseFloat(demoForm.maxTransitDays) < parseFloat(demoForm.minTransitDays)) {
+                        showToast('最长运输时间不能小于最短运输时间', true); return
+                    }
+                    if (parseFloat(demoForm.maxTransitDays) - parseFloat(demoForm.minTransitDays) > 20) {
+                        showToast('最短最长运输时间差值不可超过20', true); return
+                    }
+                    if (!demoForm.edd) { showToast('请选择EDD', true); return }
+                    if (!demoForm.originPort) { showToast('请选择起运港', true); return }
+                    if (!demoForm.destPort) { showToast('请选择目的港', true); return }
+                    if (!demoForm.estDepartureTime) { showToast('请选择预计出发时间', true); return }
+                    if (!demoForm.estArrivalTime) { showToast('请选择预计到达时间', true); return }
+                    showToast('✓ 推送成功')
+                }
+
+                // ========== 离港推送字段 ==========
+                const departureForm = reactive({
+                    lineLevel: '',
+                    minTransitDays: '',
+                    maxTransitDays: '',
+                    edd: '',
+                    originPort: '',
+                    destPort: '',
+                    estDepartureTime: '',
+                    estArrivalTime: ''
+                })
+
+                const pushDeparture = () => {
+                    if (!departureForm.lineLevel) { showToast('请选择干线级别', true); return }
+                    if (!departureForm.minTransitDays) { showToast('请输入最短运输时间', true); return }
+                    if (!departureForm.maxTransitDays) { showToast('请输入最长运输时间', true); return }
+                    if (parseFloat(departureForm.maxTransitDays) < parseFloat(departureForm.minTransitDays)) {
+                        showToast('最长运输时间不能小于最短运输时间', true); return
+                    }
+                    if (parseFloat(departureForm.maxTransitDays) - parseFloat(departureForm.minTransitDays) > 20) {
+                        showToast('最短最长运输时间差值不可超过20', true); return
+                    }
+                    if (!departureForm.edd) { showToast('请选择EDD', true); return }
+                    if (!departureForm.originPort) { showToast('请选择起运港', true); return }
+                    if (!departureForm.destPort) { showToast('请选择目的港', true); return }
+                    if (!departureForm.estDepartureTime) { showToast('请选择预计出发时间', true); return }
+                    if (!departureForm.estArrivalTime) { showToast('请选择预计到达时间', true); return }
+                    showToast('✓ 推送成功')
+                }
+
+                // ========== 派送推送字段 ==========
+                const deliveryForm = reactive({
+                    tailDelivery: '',
+                    isaNumber: '',
+                    carrier: '',
+                    trackingNumber: ''
+                })
+
+                const pushDelivery = () => {
+                    if (!deliveryForm.tailDelivery) { showToast('请选择尾程派送方式', true); return }
+                    // 卡派需要ISA预约号
+                    if (deliveryForm.tailDelivery === 'truck' && !deliveryForm.isaNumber) {
+                        showToast('请输入ISA预约号', true); return
+                    }
+                    // 快递派需要承运商和转单号
+                    if (deliveryForm.tailDelivery === 'express') {
+                        if (!deliveryForm.carrier) { showToast('请选择承运商', true); return }
+                        if (!deliveryForm.trackingNumber) { showToast('请输入转单号', true); return }
+                    }
+                    showToast('✓ 推送成功')
+                }
+
+                // ========== 约仓推送字段 ==========
+                const bookingForm = reactive({
+                    orderType: '',
+                    orderNumber: ''
+                })
+
+                const pushBooking = () => {
+                    if (!bookingForm.orderType) { showToast('请选择单号类型', true); return }
+                    if (!bookingForm.orderNumber) { showToast('请输入单号', true); return }
+                    showToast('✓ 推送成功')
+                }
+
+                return {
+                    currentPage,
+                    configItems, statusOptions, trackNameOptions, toast,
+                    saveConfig, resetConfig, addRow, deleteRow,
+                    isDefaultTrack, onStatusChange, onTrackNameChange, onEnabledChange,
+                    nodeForm, countryOptions, cityOptions, enabledTrackOptions, currentDateTime, minDateTime, isYueCang, todayDateTime, maxFutureDateTime,
+                    onCountryChange, onNodeTrackStatusChange, resetNodeForm, submitNode,
+                    demoForm, warehouseOptions, warehouseInfo, onWarehouseChange, addDemoNode, pushDemo,
+                    departureForm, pushDeparture,
+                    deliveryForm, pushDelivery,
+                    bookingForm, pushBooking
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
