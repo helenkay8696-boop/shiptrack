@@ -321,6 +321,551 @@
             }
         }
 
+        /* 空状态样式 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* 轨迹模版编辑图标 */
+        .template-edit {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+        }
+
+        .template-edit:hover {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .edit-icon {
+            font-size: 14px;
+        }
+
+        /* 轨迹模版弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .template-modal {
+            width: 900px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .template-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .template-row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .template-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .template-right {
+            flex: 1;
+        }
+
+        .template-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .template-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            padding-left: 8px;
+            border-left: 3px solid #1890ff;
+        }
+
+        .template-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        .template-textarea:focus {
+            border-color: #1890ff;
+            outline: none;
+        }
+
+        .restore-link {
+            align-self: flex-end;
+            font-size: 12px;
+            color: #1890ff;
+            text-decoration: none;
+        }
+
+        .restore-link:hover {
+            text-decoration: underline;
+        }
+
+        .template-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .template-tag {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-tag:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        /* 派送信息修改页面样式 */
+        .delivery-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .tab-item {
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #666;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tab-item:first-child {
+            border-radius: 0;
+        }
+
+        .tab-item:last-child {
+            border-right: none;
+            border-radius: 0;
+        }
+
+        .tab-item.active {
+            background: transparent;
+            color: #1890ff;
+            border-color: transparent;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #1890ff;
+        }
+
+        .tab-item:hover:not(.active) {
+            color: #1890ff;
+        }
+
+        .form-columns {
+            display: flex;
+            gap: 40px;
+        }
+
+        .form-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .delivery-modify-form {
+            padding: 20px 30px;
+        }
+
+        .delivery-modify-form .form-item {
+            margin-bottom: 12px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .delivery-modify-form .form-label {
+            width: auto;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .delivery-modify-form .form-input {
+            width: 100%;
+            max-width: none;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .input-with-unit .form-input {
+            flex: 1;
+        }
+
+        .input-with-unit .unit {
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .delivery-modify-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .delivery-modify-header h2 {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+            color: #1890ff;
+        }
+
+        /* 派送信息修改页面 - 精确样式 */
+        .delivery-modify-page {
+            background: #fff;
+        }
+
+        .dm-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e8e8e8;
+            gap: 20px;
+        }
+
+        .dm-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1890ff;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .dm-tabs {
+            display: flex;
+            gap: 0;
+            flex: 1;
+        }
+
+        .dm-tab {
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            border-right: none;
+            background: #fff;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .dm-tab:first-child {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .dm-tab:last-child {
+            border-right: 1px solid #d9d9d9;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .dm-tab.active {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+
+        .dm-tab.active+.dm-tab {
+            border-left-color: #1890ff;
+        }
+
+        .dm-copy-btn {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .dm-form {
+            padding: 15px 20px;
+        }
+
+        .dm-columns {
+            display: flex;
+            gap: 30px;
+        }
+
+        .dm-col {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dm-col-left {
+            flex: 0 0 320px;
+        }
+
+        .dm-col-middle {
+            flex: 0 0 200px;
+        }
+
+        .dm-col-right {
+            flex: 1;
+        }
+
+        .dm-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dm-label {
+            width: 80px;
+            flex-shrink: 0;
+            font-size: 12px;
+            color: #333;
+            text-align: right;
+        }
+
+        .dm-input {
+            height: 26px;
+            padding: 0 8px;
+            font-size: 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .dm-input:focus {
+            outline: none;
+            border-color: #40a9ff;
+        }
+
+        .dm-input-xs {
+            width: 50px;
+        }
+
+        .dm-input-sm {
+            width: 80px;
+        }
+
+        .dm-input-md {
+            width: 110px;
+        }
+
+        .dm-input-lg {
+            width: 150px;
+        }
+
+        .dm-unit {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .dm-row-radio {
+            align-items: flex-start;
+        }
+
+        .dm-radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+
+        .dm-radio-group-sub {
+            margin-left: 88px;
+        }
+
+        .dm-radio {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .dm-radio input[type="radio"] {
+            margin: 0;
+            width: 13px;
+            height: 13px;
+        }
+
+        /* 精确宽度控制 */
+        .dm-w60 {
+            width: 60px;
+        }
+
+        .dm-w80 {
+            width: 80px;
+        }
+
+        .dm-w100 {
+            width: 100px;
+        }
+
+        .dm-w120 {
+            width: 120px;
+        }
+
+        .dm-w150 {
+            width: 150px;
+        }
+
+        .dm-w180 {
+            width: 180px;
+        }
+
+        .dm-w200 {
+            width: 300px;
+        }
+
+        .dm-checkbox {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .dm-text {
+            font-size: 12px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .dm-row-empty {
+            height: 26px;
+        }
+
+        .dm-row-textarea {
+            align-items: flex-start;
+        }
+
+        .dm-textarea {
+            width: 180px;
+            height: 60px;
+            padding: 6px 8px;
+            font-size: 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        .dm-textarea:focus {
+            outline: none;
+            border-color: #40a9ff;
+        }
+
         /* 添加轨迹节点表单 */
         .form-content {
             padding: 40px 60px;
@@ -419,6 +964,11 @@
                         <span class="icon">⚙️</span>
                         <span>轨迹状态配置</span>
                     </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'customTrack' }"
+                        @click="currentPage = 'customTrack'">
+                        <span class="icon">🎯</span>
+                        <span>自定义轨迹</span>
+                    </div>
                     <div class="menu-item" :class="{ active: currentPage === 'add' }" @click="currentPage = 'add'">
                         <span class="icon">📍</span>
                         <span>推送轨迹节点</span>
@@ -447,6 +997,11 @@
                         <span class="icon">🏭</span>
                         <span>新增仓库弹窗</span>
                     </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'deliveryModify' }"
+                        @click="currentPage = 'deliveryModify'">
+                        <span class="icon">✏️</span>
+                        <span>派送信息修改</span>
+                    </div>
                 </div>
             </div>
 
@@ -470,11 +1025,13 @@
                                     <th>#</th>
                                     <th>工作单状态</th>
                                     <th>状态编码</th>
-                                    <th>轨迹名称(亚马逊)</th>
+                                    <th>轨迹名称</th>
+                                    <th>轨迹名称(英)</th>
                                     <th>轨迹编码(亚马逊)</th>
                                     <th>节点</th>
                                     <th>港前/港后</th>
                                     <th>是否启用</th>
+                                    <th>是否路由</th>
                                     <th class="action-cell">删除</th>
                                 </tr>
                             </thead>
@@ -500,22 +1057,42 @@
                                     </td>
                                     <td><span class="auto-text">{{ item.statusCode || '-' }}</span></td>
                                     <td>
-                                        <span v-if="isDefaultTrack(item.trackName)" class="auto-text">{{ item.trackName
-                                            }}</span>
-                                        <select v-else v-model="item.trackName" @change="onTrackNameChange(item)">
+                                        <select v-model="item.customTrackName" @change="onCustomTrackNameChange(item)">
                                             <option value="">请选择</option>
-                                            <option v-for="opt in trackNameOptions" :key="opt.value" :value="opt.value">
-                                                {{ opt.label }}
+                                            <option v-for="track in customTrackItems" :key="track.id"
+                                                :value="track.trackName">
+                                                {{ track.trackName || '未命名' }}
                                             </option>
                                         </select>
                                     </td>
-                                    <td><span class="auto-text">{{ item.trackCode || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
+                                    <td>
+                                        <span v-if="isDefaultTrack(item.trackName)" class="auto-text">{{ item.trackName
+                                            }}/{{ item.trackCode || '-' }}</span>
+                                        <template v-else>
+                                            <select v-model="item.trackName" @change="onTrackNameChange(item)">
+                                                <option value="">请选择</option>
+                                                <option v-for="opt in trackNameOptions" :key="opt.value"
+                                                    :value="opt.value">
+                                                    {{ opt.label }}
+                                                </option>
+                                            </select>
+                                            <span class="auto-text" style="margin-left: 8px;">{{ item.trackCode || ''
+                                                }}</span>
+                                        </template>
+                                    </td>
                                     <td><span class="auto-text">{{ item.node || '-' }}</span></td>
                                     <td><span class="auto-text">{{ item.portType || '-' }}</span></td>
                                     <td class="checkbox-cell">
                                         <label class="switch">
                                             <input type="checkbox" v-model="item.enabled"
                                                 @change="onEnabledChange(item)">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+                                    <td class="checkbox-cell">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="item.pushEnabled">
                                             <span class="slider"></span>
                                         </label>
                                     </td>
@@ -531,6 +1108,117 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- 自定义轨迹页面 -->
+                    <div v-if="currentPage === 'customTrack'">
+                        <div class="header">
+                            <h1>自定义轨迹</h1>
+                            <div class="header-actions">
+                                <button class="btn btn-primary" @click="saveCustomTrack">保存</button>
+                            </div>
+                        </div>
+
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th class="action-cell">+</th>
+                                    <th>#</th>
+                                    <th>轨迹代码</th>
+                                    <th>轨迹名称</th>
+                                    <th>轨迹名称(英)</th>
+                                    <th>轨迹模版</th>
+                                    <th>创建人</th>
+                                    <th>创建时间</th>
+                                    <th>修改人</th>
+                                    <th>修改时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 有数据时显示列表 -->
+                                <tr v-for="(item, index) in customTrackItems" :key="item.id">
+                                    <td class="action-cell">
+                                        <button class="btn-icon btn-add" @click="addCustomTrackRow(index)" title="新增行">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="12" y1="8" x2="12" y2="16" />
+                                                <line x1="8" y1="12" x2="16" y2="12" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn-icon btn-delete" @click="deleteCustomTrackRow(index)"
+                                            title="删除行">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="8" y1="12" x2="16" y2="12" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                    <td class="row-number">{{ index + 1 }}</td>
+                                    <td><input type="text" v-model="item.trackCode" placeholder="请输入"></td>
+                                    <td><input type="text" v-model="item.trackName" placeholder="请输入"></td>
+                                    <td><input type="text" v-model="item.trackNameEn" placeholder="请输入"></td>
+                                    <td>
+                                        <span class="template-edit" @click="openTemplateModal(item)">
+                                            <span class="edit-icon">✏️</span>
+                                        </span>
+                                    </td>
+                                    <td><span class="auto-text">{{ item.creator || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.createTime || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.modifier || '-' }}</span></td>
+                                    <td><span class="auto-text">{{ item.modifyTime || '-' }}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 空状态 -->
+                        <div v-if="customTrackItems.length === 0" class="empty-state">
+                            <div class="empty-icon">🔍</div>
+                            <div class="empty-text">暂无数据</div>
+                            <button class="btn btn-primary" @click="addFirstCustomTrackRow">
+                                <span>➕ 新增</span>
+                            </button>
+                        </div>
+
+                        <!-- 轨迹模版弹窗 -->
+                        <div v-if="showTemplateModal" class="modal-overlay" @click.self="closeTemplateModal">
+                            <div class="modal-content template-modal">
+                                <div class="modal-header">
+                                    <h3>轨迹模板</h3>
+                                    <button class="modal-close" @click="closeTemplateModal">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="template-form">
+                                        <div class="template-row">
+                                            <div class="template-left">
+                                                <div class="template-field">
+                                                    <label class="template-label">轨迹名称</label>
+                                                    <textarea class="template-textarea" v-model="templateForm.trackName"
+                                                        placeholder="请输入轨迹名称"></textarea>
+                                                    <a href="javascript:;" class="restore-link"
+                                                        @click="restoreTrackName">恢复默认</a>
+                                                </div>
+                                                <div class="template-field">
+                                                    <label class="template-label">轨迹名称(英)</label>
+                                                    <textarea class="template-textarea"
+                                                        v-model="templateForm.trackNameEn"
+                                                        placeholder="请输入英文轨迹名称"></textarea>
+                                                    <a href="javascript:;" class="restore-link"
+                                                        @click="restoreTrackNameEn">恢复默认</a>
+                                                </div>
+                                            </div>
+                                            <div class="template-right">
+                                                <label class="template-label">轨迹模板</label>
+                                                <div class="template-tags">
+                                                    <span class="template-tag" v-for="tag in templateTags"
+                                                        :key="tag.value" @click="insertTag(tag.value)">{{ tag.label
+                                                        }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 添加轨迹节点页面 -->
@@ -940,6 +1628,195 @@
                                     <option value="enabled">启用</option>
                                     <option value="disabled">禁用</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="currentPage === 'deliveryModify'" class="delivery-modify-page">
+                        <!-- 顶部标题栏 -->
+                        <div class="dm-header">
+                            <h2 class="dm-title">派送信息</h2>
+                            <div class="dm-tabs">
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'FBA' }"
+                                    @click="deliveryModifyTab = 'FBA'">FBA</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'FBX' }"
+                                    @click="deliveryModifyTab = 'FBX'">FBX</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'private' }"
+                                    @click="deliveryModifyTab = 'private'">私人地址</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'business' }"
+                                    @click="deliveryModifyTab = 'business'">商业地址</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'customer' }"
+                                    @click="deliveryModifyTab = 'customer'">客户信息</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'hold' }"
+                                    @click="deliveryModifyTab = 'hold'">HOLD件</span>
+                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'signed' }"
+                                    @click="deliveryModifyTab = 'signed'">已签收</span>
+                            </div>
+                            <button class="btn btn-primary dm-copy-btn" @click="copyDeliveryInfo">复制</button>
+                        </div>
+
+                        <!-- 表单内容 -->
+                        <div class="dm-form">
+                            <div class="dm-columns">
+                                <!-- 左侧列 -->
+                                <div class="dm-col dm-col-left">
+
+                                    <div class="dm-row">
+                                        <label class="dm-label">尾程派送方式</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.lastMileMethod">
+                                            <option value="">请选择</option>
+                                            <option value="truck">卡派</option>
+                                            <option value="express">快递派</option>
+                                            <option value="amazon">亚马逊自提</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">平台</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.platform">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">仓库</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.warehouse">
+                                            <option value="">请选择仓库</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">建标时间</label>
+                                        <input type="date" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.createTime" placeholder="选择日期">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">通知税号1</label>
+                                        <input type="text" class="dm-input dm-w100" v-model="deliveryModifyForm.taxNo1"
+                                            placeholder="请输入">
+                                        <select class="dm-input dm-w100" v-model="deliveryModifyForm.taxNo1Type">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">通知税号2</label>
+                                        <input type="text" class="dm-input dm-w100" v-model="deliveryModifyForm.taxNo2"
+                                            placeholder="请输入">
+                                        <select class="dm-input dm-w100" v-model="deliveryModifyForm.taxNo2Type">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="dm-row">
+                                        <label class="dm-label">地址编号</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.addressNo" placeholder="请输入">
+                                    </div>
+                                </div>
+
+                                <!-- 中间列 -->
+                                <div class="dm-col dm-col-middle">
+                                    <!-- 卡派显示ISA预约号 -->
+                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'truck'">
+                                        <label class="dm-label">ISA预约号</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.isaNumber" placeholder="请输入ISA预约号">
+                                    </div>
+                                    <!-- 快递派显示承运商 (中列) -->
+                                    <div class="dm-row" v-else-if="deliveryModifyForm.lastMileMethod === 'express'">
+                                        <label class="dm-label">快递公司</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.tailCarrier">
+                                            <option value="">请选择</option>
+                                            <option value="ups">UPS</option>
+                                            <option value="fedex">Fedex</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row dm-row-empty" v-else></div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">国家/地区</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.country">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">省/州</label>
+                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.state">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">区/县</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.district" placeholder="请输入">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">地址1</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.address1" placeholder="请输入">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">地址2</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.address2" placeholder="请输入">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">地址3</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.address3" placeholder="请输入">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">邮编</label>
+                                        <input type="text" class="dm-input dm-w200" v-model="deliveryModifyForm.zipCode"
+                                            placeholder="请输入">
+                                    </div>
+                                </div>
+
+                                <!-- 右侧列 -->
+                                <div class="dm-col dm-col-right">
+                                    <!-- 快递派显示转单号 (右列) -->
+                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'express'">
+                                        <label class="dm-label">快递单号</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.tailTrackingNumber" placeholder="请输入转单号">
+                                    </div>
+                                    <div class="dm-row dm-row-empty" v-else></div>
+                                    <div class="dm-row dm-row-radio">
+                                        <label class="dm-label">◎</label>
+                                        <div class="dm-radio-group">
+                                            <label class="dm-radio"><input type="radio"
+                                                    v-model="deliveryModifyForm.currentArea" value="split">
+                                                非偏远地方</label>
+                                            <label class="dm-radio"><input type="radio"
+                                                    v-model="deliveryModifyForm.currentArea" value="cover"> 偏远地区</label>
+                                            <label class="dm-radio"><input type="radio"
+                                                    v-model="deliveryModifyForm.currentArea" value="remote">
+                                                超偏远地区</label>
+                                        </div>
+                                    </div>
+                                    <div class="dm-row dm-row-radio">
+                                        <label class="dm-label"></label>
+                                        <div class="dm-radio-group">
+                                            <label class="dm-radio"><input type="radio"
+                                                    v-model="deliveryModifyForm.areaType" value="standard">
+                                                极偏远地区</label>
+                                            <label class="dm-radio"><input type="radio"
+                                                    v-model="deliveryModifyForm.areaType" value="remote"> 岛屿</label>
+                                        </div>
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">派送备注</label>
+                                        <input type="text" class="dm-input dm-w150"
+                                            v-model="deliveryModifyForm.cargoRemark" placeholder="请输入">
+                                    </div>
+                                    <div class="dm-row">
+                                        <label class="dm-label">到付金额</label>
+                                        <input type="text" class="dm-input dm-w60" v-model="deliveryModifyForm.freight"
+                                            placeholder="0">
+                                        <span class="dm-unit">CNY</span>
+                                    </div>
+                                    <div class="dm-row dm-row-textarea">
+                                        <label class="dm-label">提单收货人</label>
+                                        <textarea class="dm-textarea" v-model="deliveryModifyForm.routeBatch"
+                                            placeholder="请输入"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1435,6 +2312,143 @@
                     showToast('✓ 新增成功')
                 }
 
+                // ========== 派送信息修改 ==========
+                const deliveryModifyTab = ref('FBA')
+                const deliveryModifyForm = reactive({
+                    // 左列
+                    platform: '',
+                    lastMileMethod: '',
+                    warehouse: '',
+                    createTime: '',
+                    createTimeEnabled: false,
+                    taxNo1: '',
+                    taxNo1Type: '',
+                    taxNo2: '',
+                    taxNo2Type: '',
+                    courier: '',
+                    trackingNo: '',
+                    addressNo: '',
+                    // 中列
+                    country: '',
+                    state: '',
+                    district: '',
+                    address1: '',
+                    address2: '',
+                    address3: '',
+                    zipCode: '',
+                    // 右列
+                    isaNumber: '',
+                    tailCarrier: '',
+                    tailTrackingNumber: '',
+                    currentArea: '',
+                    areaType: '',
+                    cargoRemark: '',
+                    freight: '',
+                    routeBatch: ''
+                })
+
+                const copyDeliveryInfo = () => {
+                    const text = JSON.stringify(deliveryModifyForm, null, 2)
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('✓ 已复制到剪贴板')
+                    }).catch(() => {
+                        showToast('复制失败', true)
+                    })
+                }
+
+                // ========== 自定义轨迹 ==========
+                const customTrackItems = reactive([])
+                let customTrackIdCounter = 1
+
+                const createCustomTrackRow = () => ({
+                    id: customTrackIdCounter++,
+                    trackCode: '',
+                    trackName: '',
+                    trackNameEn: '',
+                    creator: '-',
+                    createTime: '-',
+                    modifier: '-',
+                    modifyTime: '-'
+                })
+
+                const addFirstCustomTrackRow = () => {
+                    customTrackItems.push(createCustomTrackRow())
+                }
+
+                const addCustomTrackRow = (index) => {
+                    customTrackItems.splice(index + 1, 0, createCustomTrackRow())
+                }
+
+                const deleteCustomTrackRow = (index) => {
+                    customTrackItems.splice(index, 1)
+                }
+
+                const saveCustomTrack = () => {
+                    showToast('✓ 自定义轨迹已保存')
+                }
+
+                // ========== 轨迹模版弹窗 ==========
+                const showTemplateModal = ref(false)
+                const currentEditItem = ref(null)
+                const templateForm = reactive({
+                    trackName: '',
+                    trackNameEn: ''
+                })
+
+                const templateTags = [
+                    { label: '起运地', value: '{起运地}' },
+                    { label: '目的地', value: '{目的地}' },
+                    { label: '船名', value: '{船名}' },
+                    { label: '航次/班列号/航班号', value: '{航次/班列号/航班号}' },
+                    { label: '入仓时间', value: '{入仓时间}' },
+                    { label: '装柜时间', value: '{装柜时间}' },
+                    { label: 'ETD', value: '{ETD}' },
+                    { label: 'ETA', value: '{ETA}' },
+                    { label: 'ATD', value: '{ATD}' },
+                    { label: 'ATA', value: '{ATA}' },
+                    { label: '签收时间', value: '{签收时间}' },
+                    { label: '出口放行时间', value: '{出口放行时间}' },
+                    { label: '进口查验时间', value: '{进口查验时间}' },
+                    { label: '进口放行时间', value: '{进口放行时间}' },
+                    { label: '入海外仓时间', value: '{入海外仓时间}' },
+                    { label: '尾程拆柜/拆板时间', value: '{尾程拆柜/拆板时间}' },
+                    { label: '船公司/航空公司', value: '{船公司/航空公司}' },
+                    { label: '出口查验时间', value: '{出口查验时间}' }
+                ]
+
+                const openTemplateModal = (item) => {
+                    currentEditItem.value = item
+                    templateForm.trackName = item.trackName || ''
+                    templateForm.trackNameEn = item.trackNameEn || ''
+                    showTemplateModal.value = true
+                }
+
+                const closeTemplateModal = () => {
+                    if (currentEditItem.value) {
+                        currentEditItem.value.trackName = templateForm.trackName
+                        currentEditItem.value.trackNameEn = templateForm.trackNameEn
+                    }
+                    showTemplateModal.value = false
+                    currentEditItem.value = null
+                }
+
+                const insertTag = (tagValue) => {
+                    templateForm.trackName += tagValue
+                }
+
+                const restoreTrackName = () => {
+                    templateForm.trackName = ''
+                }
+
+                const restoreTrackNameEn = () => {
+                    templateForm.trackNameEn = ''
+                }
+
+                const onCustomTrackNameChange = (item) => {
+                    const found = customTrackItems.find(t => t.trackName === item.customTrackName)
+                    item.customTrackNameEn = found ? found.trackNameEn : ''
+                }
+
                 return {
                     currentPage,
                     configItems, statusOptions, trackNameOptions, toast,
@@ -1446,7 +2460,10 @@
                     departureForm, pushDeparture,
                     deliveryForm, pushDelivery,
                     bookingForm, pushBooking,
-                    warehouseForm, submitWarehouse, postalCodes, addPostalCode, removePostalCode
+                    warehouseForm, submitWarehouse, postalCodes, addPostalCode, removePostalCode,
+                    deliveryModifyTab, deliveryModifyForm, copyDeliveryInfo,
+                    customTrackItems, addFirstCustomTrackRow, addCustomTrackRow, deleteCustomTrackRow, saveCustomTrack, onCustomTrackNameChange,
+                    showTemplateModal, templateForm, templateTags, openTemplateModal, closeTemplateModal, insertTag, restoreTrackName, restoreTrackNameEn
                 }
             }
         }).mount('#app')
