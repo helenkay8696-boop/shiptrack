@@ -139,8 +139,87 @@
         .config-table td {
             padding: 10px 12px;
             border: 1px solid #e8e8e8;
-            text-align: left;
             font-size: 13px;
+        }
+
+        /* 状态模版左右分栏 */
+        .config-layout {
+            display: flex;
+            min-height: calc(100vh - 40px);
+        }
+
+        .transport-tabs {
+            width: 120px;
+            flex-shrink: 0;
+            border-right: 1px solid #e8e8e8;
+            background: #fff;
+            padding-top: 10px;
+            margin-right: -1px;
+            /* 使得边框和内容区的边框重合或紧贴 */
+            z-index: 1;
+        }
+
+        .transport-tab {
+            padding: 16px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 2px solid transparent;
+        }
+
+        .transport-tab:hover:not(.active) {
+            color: #1890ff;
+        }
+
+        .transport-tab.active {
+            color: #1890ff;
+            background-color: #f5f5f5;
+            border-right: 2px solid #1890ff;
+        }
+
+        .config-content {
+            flex: 1;
+            padding-left: 0;
+            /* 根据需要调整间距 */
+            border-left: 1px solid #e8e8e8;
+        }
+
+        /* 二级选项卡（整柜/散货） */
+        .type-tabs {
+            display: inline-flex;
+        }
+
+        .type-tab {
+            padding: 6px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            color: #666;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .type-tab.left-tab {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .type-tab.right-tab {
+            border-radius: 0 3px 3px 0;
+            margin-left: -1px;
+        }
+
+        .type-tab.single-tab {
+            border-radius: 3px;
+        }
+
+        .type-tab.active {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+            z-index: 1;
         }
 
         .config-table thead th {
@@ -148,10 +227,12 @@
             color: #666;
             font-weight: 500;
             white-space: nowrap;
+            text-align: center;
         }
 
         .config-table tbody td {
             color: #333;
+            text-align: center;
         }
 
         .config-table tbody tr:hover {
@@ -503,6 +584,247 @@
             color: #1890ff;
         }
 
+        /* 收货渠道页面专属样式 */
+        .rc-page {
+            background: #fff;
+            padding: 24px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .rc-section {
+            margin-bottom: 24px;
+        }
+
+        .rc-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 16px;
+            padding-left: 8px;
+            border-left: 3px solid #1890ff;
+        }
+
+        .rc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 40px;
+            padding: 0 10px;
+        }
+
+        .rc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .rc-label {
+            width: 140px;
+            flex-shrink: 0;
+            font-size: 13px;
+            color: #666;
+            text-align: right;
+            white-space: normal;
+            line-height: 1.2;
+        }
+
+        .rc-label::before {
+            content: '*';
+            color: transparent;
+            margin-right: 4px;
+        }
+
+        .rc-label.required::before {
+            color: #ff4d4f;
+        }
+
+        .rc-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rc-input {
+            height: 32px;
+            padding: 0 10px;
+            font-size: 13px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 100%;
+            background: #fff;
+        }
+
+        .rc-input:focus {
+            outline: none;
+            border-color: #40a9ff;
+        }
+
+        .rc-input.error {
+            background-color: #fff1f0;
+            border-color: #ff4d4f;
+        }
+
+        .rc-select {
+            height: 32px;
+            padding: 0 10px;
+            font-size: 13px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 100%;
+            background: #fff;
+        }
+
+        .rc-multi-select {
+            position: relative;
+            width: 100%;
+            height: 32px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .rc-multi-select .placeholder {
+            color: #999;
+        }
+
+        .rc-multi-select .selected-text {
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 20px;
+        }
+
+        .rc-multi-select .arrow {
+            position: absolute;
+            right: 10px;
+            border-top: 4px solid #666;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+        }
+
+        .rc-multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            margin-top: 4px;
+            padding: 4px 0;
+            display: none;
+        }
+
+        .rc-multi-select-dropdown.active {
+            display: block;
+        }
+
+        .rc-multi-option {
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .rc-multi-option:hover {
+            background-color: #f5f5f5;
+        }
+
+        .rc-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rc-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .rc-radio-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rc-radio-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .rc-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 尾程派送表格样式 */
+        .rc-rule-table {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .rc-rule-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            flex-wrap: nowrap;
+            width: 100%;
+        }
+
+        .rc-rule-label {
+            width: 90px;
+            font-size: 13px;
+            color: #666;
+            text-align: right;
+        }
+
+        .rc-unit-select {
+            width: 80px;
+        }
+
+        .rc-range-input {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .rc-tip-icon {
+            color: #999;
+            font-size: 14px;
+            cursor: help;
+            margin-left: 4px;
+        }
+
         /* 派送信息修改页面样式 */
         .delivery-tabs {
             display: flex;
@@ -641,7 +963,7 @@
             align-items: center;
             padding: 10px 15px;
             border-bottom: 1px solid #e8e8e8;
-            gap: 20px;
+            gap: 12px;
         }
 
         .dm-title {
@@ -655,7 +977,6 @@
         .dm-tabs {
             display: flex;
             gap: 0;
-            flex: 1;
         }
 
         .dm-tab {
@@ -817,6 +1138,23 @@
             width: 120px;
         }
 
+        .dm-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            margin-left: 0;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .dm-checkbox-item input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
         .dm-w150 {
             width: 150px;
         }
@@ -962,7 +1300,7 @@
                     <div class="menu-item" :class="{ active: currentPage === 'config' }"
                         @click="currentPage = 'config'">
                         <span class="icon">⚙️</span>
-                        <span>轨迹状态配置</span>
+                        <span>状态模版</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'customTrack' }"
                         @click="currentPage = 'customTrack'">
@@ -1002,6 +1340,11 @@
                         <span class="icon">✏️</span>
                         <span>派送信息修改</span>
                     </div>
+                    <div class="menu-item" :class="{ active: currentPage === 'receivingChannel' }"
+                        @click="currentPage = 'receivingChannel'">
+                        <span class="icon">➕</span>
+                        <span>收货渠道配置</span>
+                    </div>
                 </div>
             </div>
 
@@ -1009,105 +1352,159 @@
             <div class="main-content">
                 <div class="container">
                     <!-- 配置页面 -->
-                    <div v-if="currentPage === 'config'">
-                        <div class="header">
-                            <h1>轨迹状态配置</h1>
-                            <div class="header-actions">
-                                <button class="btn" @click="resetConfig">重置</button>
-                                <button class="btn btn-primary" @click="saveConfig">保存配置</button>
-                            </div>
+                    <div v-if="currentPage === 'config'" class="config-layout">
+                        <!-- 二次导航侧边栏 -->
+                        <div class="transport-tabs">
+                            <div class="transport-tab" :class="{ active: currentTransport === 'ocean' }"
+                                @click="currentTransport = 'ocean'">海运</div>
+                            <div class="transport-tab" :class="{ active: currentTransport === 'air' }"
+                                @click="currentTransport = 'air'">空运</div>
+                            <div class="transport-tab" :class="{ active: currentTransport === 'rail' }"
+                                @click="currentTransport = 'rail'">铁运</div>
+                            <div class="transport-tab" :class="{ active: currentTransport === 'land' }"
+                                @click="currentTransport = 'land'">陆运</div>
                         </div>
 
-                        <table class="config-table">
-                            <thead>
-                                <tr>
-                                    <th class="action-cell">+</th>
-                                    <th>#</th>
-                                    <th>工作单状态</th>
-                                    <th>状态编码</th>
-                                    <th>轨迹名称</th>
-                                    <th>轨迹名称(英)</th>
-                                    <th>轨迹编码(亚马逊)</th>
-                                    <th>节点</th>
-                                    <th>港前/港后</th>
-                                    <th>是否启用</th>
-                                    <th>是否路由</th>
-                                    <th class="action-cell">删除</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, index) in configItems" :key="item.id">
-                                    <td class="action-cell">
-                                        <button class="btn-icon btn-add" @click="addRow(index)" title="新增行">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="12" cy="12" r="10" />
-                                                <line x1="12" y1="8" x2="12" y2="16" />
-                                                <line x1="8" y1="12" x2="16" y2="12" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                    <td class="row-number">{{ index + 1 }}</td>
-                                    <td>
-                                        <select v-model="item.status" @change="onStatusChange(item)">
-                                            <option value="">请选择</option>
-                                            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">
-                                                {{ opt.label }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td><span class="auto-text">{{ item.statusCode || '-' }}</span></td>
-                                    <td>
-                                        <select v-model="item.customTrackName" @change="onCustomTrackNameChange(item)">
-                                            <option value="">请选择</option>
-                                            <option v-for="track in customTrackItems" :key="track.id"
-                                                :value="track.trackName">
-                                                {{ track.trackName || '未命名' }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
-                                    <td>
-                                        <span v-if="isDefaultTrack(item.trackName)" class="auto-text">{{ item.trackName
-                                            }}/{{ item.trackCode || '-' }}</span>
-                                        <template v-else>
-                                            <select v-model="item.trackName" @change="onTrackNameChange(item)">
+                        <!-- 右侧表格区 -->
+                        <div class="config-content">
+                            <div class="header">
+                                <!-- 新增：整柜/散货 选项卡, 从下方移到原标题位置 -->
+                                <div class="type-tabs">
+                                    <span class="type-tab left-tab" v-if="currentTransport !== 'air'"
+                                        :class="{ active: currentType === 'fcl' }"
+                                        @click="currentType = 'fcl'">整柜</span>
+                                    <span class="type-tab"
+                                        :class="[ currentTransport === 'air' ? 'single-tab' : 'right-tab', { active: currentType === 'lcl' } ]"
+                                        @click="currentType = 'lcl'">散货</span>
+                                </div>
+                                <div class="header-actions">
+                                    <button class="btn" @click="resetConfig">重置</button>
+                                    <button class="btn btn-primary" @click="saveConfig">保存配置</button>
+                                </div>
+                            </div>
+
+                            <table class="config-table">
+                                <thead>
+                                    <tr>
+                                        <th class="action-cell">+</th>
+                                        <th>#</th>
+                                        <th>工作单状态</th>
+                                        <th>状态编码</th>
+                                        <th>轨迹名称</th>
+                                        <th>轨迹名称(英)</th>
+                                        <th>轨迹编码(亚马逊)</th>
+                                        <th>节点</th>
+                                        <th>港前/港后</th>
+                                        <th>是否启用</th>
+                                        <th>是否路由</th>
+                                        <th class="action-cell">删除</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in configItems" :key="item.id">
+                                        <td class="action-cell">
+                                            <button class="btn-icon btn-add" @click="addRow(index)" title="新增行">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <line x1="12" y1="8" x2="12" y2="16" />
+                                                    <line x1="8" y1="12" x2="16" y2="12" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                        <td class="row-number">{{ index + 1 }}</td>
+                                        <td>
+                                            <template v-if="item.isFixed || item.isSaved">
+                                                <span class="auto-text">{{ statusOptions.find(opt => opt.value ===
+                                                    item.status)?.label || item.status }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <select v-model="item.status" @change="onStatusChange(item)">
+                                                    <option value="">请选择</option>
+                                                    <option v-for="opt in getAvailableStatusOptions(item)"
+                                                        :key="opt.value" :value="opt.value">
+                                                        {{ opt.label }}
+                                                    </option>
+                                                </select>
+                                            </template>
+                                        </td>
+                                        <td><span class="auto-text">{{ item.statusCode || '-' }}</span></td>
+                                        <td>
+                                            <select v-model="item.customTrackName"
+                                                @change="onCustomTrackNameChange(item)">
                                                 <option value="">请选择</option>
-                                                <option v-for="opt in trackNameOptions" :key="opt.value"
-                                                    :value="opt.value">
-                                                    {{ opt.label }}
+                                                <option v-for="track in customTrackItems" :key="track.id"
+                                                    :value="track.trackName">
+                                                    {{ track.trackName || '未命名' }}
                                                 </option>
                                             </select>
-                                            <span class="auto-text" style="margin-left: 8px;">{{ item.trackCode || ''
-                                                }}</span>
-                                        </template>
-                                    </td>
-                                    <td><span class="auto-text">{{ item.node || '-' }}</span></td>
-                                    <td><span class="auto-text">{{ item.portType || '-' }}</span></td>
-                                    <td class="checkbox-cell">
-                                        <label class="switch">
-                                            <input type="checkbox" v-model="item.enabled"
-                                                @change="onEnabledChange(item)">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </td>
-                                    <td class="checkbox-cell">
-                                        <label class="switch">
-                                            <input type="checkbox" v-model="item.pushEnabled">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </td>
-                                    <td class="action-cell">
-                                        <button v-if="!isDefaultTrack(item.trackName)" class="btn-icon btn-delete"
-                                            @click="deleteRow(index)" title="删除行">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path
-                                                    d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
+                                        <td>
+                                            <template v-if="item.isFixed || item.isSaved">
+                                                <span class="auto-text">{{ item.trackName ?
+                                                    `${item.trackName}/${item.trackCode || '-'}` : '-' }}</span>
+                                            </template>
+                                            <template v-else-if="item.trackName">
+                                                <span class="auto-text">{{
+                                                    item.trackName
+                                                    }}/{{ item.trackCode || '-' }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <span class="auto-text">-</span>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template v-if="item.isFixed || item.isSaved">
+                                                <span class="auto-text">{{ item.node || '' }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <select v-model="item.node" class="dm-input" style="width: 100px;">
+                                                    <option value="">请选择</option>
+                                                    <option v-for="opt in nodeOptions" :key="opt" :value="opt">{{ opt }}
+                                                    </option>
+                                                </select>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template v-if="item.isFixed || item.isSaved">
+                                                <span class="auto-text">{{ item.portType || '' }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <select v-model="item.portType" class="dm-input" style="width: 80px;">
+                                                    <option value="">请选择</option>
+                                                    <option v-for="opt in portTypeOptions" :key="opt" :value="opt">{{
+                                                        opt }}</option>
+                                                </select>
+                                            </template>
+                                        </td>
+                                        <td class="checkbox-cell">
+                                            <label class="switch">
+                                                <input type="checkbox" v-model="item.enabled"
+                                                    @change="onEnabledChange(item)">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </td>
+                                        <td class="checkbox-cell">
+                                            <label class="switch">
+                                                <input type="checkbox" v-model="item.pushEnabled">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </td>
+                                        <td class="action-cell">
+                                            <button v-if="!item.isFixed" class="btn-icon btn-delete"
+                                                @click="deleteRow(index)" title="删除行">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2">
+                                                    <path
+                                                        d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <!-- 自定义轨迹页面 -->
@@ -1217,6 +1614,357 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 收货渠道页面 -->
+                    <div v-if="currentPage === 'receivingChannel'">
+                        <div class="header">
+                            <h1>收货渠道配置</h1>
+                        </div>
+                        <div class="rc-page">
+                            <!-- 区块1: 收货渠道 -->
+                            <div class="rc-section">
+                                <div class="rc-section-title">
+                                    <span>收货渠道</span>
+                                    <div class="rc-checkbox-group">
+                                        <label class="rc-checkbox-item">
+                                            <input type="checkbox" v-model="receivingChannelForm.mustUploadPod">
+                                            <span>订单签收必须上传POD</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="rc-grid">
+                                    <div class="rc-item">
+                                        <label class="rc-label required">代码</label>
+                                        <div class="rc-input-wrapper">
+                                            <input type="text" class="rc-input"
+                                                :class="{ error: !receivingChannelForm.code }"
+                                                v-model="receivingChannelForm.code" placeholder="请输入代码">
+                                        </div>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label required">渠道名称</label>
+                                        <div class="rc-input-wrapper">
+                                            <input type="text" class="rc-input"
+                                                :class="{ error: !receivingChannelForm.name }"
+                                                v-model="receivingChannelForm.name" placeholder="请输入渠道名称">
+                                        </div>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label required">运输方式</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.transportType">
+                                            <option value="">请选择运输方式</option>
+                                            <option value="ocean">海运</option>
+                                            <option value="air">空运</option>
+                                            <option value="rail">铁运</option>
+                                            <option value="land">陆运</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">快递</label>
+                                        <div class="rc-input-wrapper"
+                                            style="display: flex; align-items: center; border: none; padding-left: 0;">
+                                            <input type="checkbox" v-model="receivingChannelForm.isExpress"
+                                                style="width: 16px; height: 16px; cursor: pointer;">
+                                        </div>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">国家/地区</label>
+                                        <div class="rc-multi-select" @click="toggleCountrySelect"
+                                            ref="countrySelectRef">
+                                            <div class="selected-text" v-if="receivingChannelForm.countries.length > 0">
+                                                {{ receivingChannelForm.countries.map(val =>
+                                                channelCountryOptions.find(opt => opt.value ===
+                                                val)?.label).filter(Boolean).join(', ') }}
+                                            </div>
+                                            <div class="placeholder" v-else>
+                                                请选择国家/地区
+                                            </div>
+                                            <i class="arrow"></i>
+                                            <div class="rc-multi-select-dropdown" :class="{ active: showCountrySelect }"
+                                                @click.stop>
+                                                <label class="rc-multi-option" v-for="country in channelCountryOptions"
+                                                    :key="country.value">
+                                                    <input type="checkbox" :value="country.value"
+                                                        v-model="receivingChannelForm.countries">
+                                                    <span>{{ country.label }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label required">干线级别</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.mainlineLevel">
+                                            <option value="">请选择</option>
+                                            <option value="economy">普线Economy</option>
+                                            <option value="standard">快线Standard</option>
+                                            <option value="express">特快线Express</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">可接收货物</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.receivableCargo">
+                                            <option value="">请选择可接收货物</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">可接收货物类别</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.receivableCargoType">
+                                            <option value="">请选择类别</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">计税方式</label>
+                                        <div class="rc-radio-group">
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.taxType" value="tax_included">
+                                                包税</label>
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.taxType" value="tax_excluded">
+                                                不包税</label>
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.taxType" value="none"> 不限制</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 区块2: 计费规则 -->
+                            <div class="rc-section">
+                                <div class="rc-section-title">
+                                    <span>计费规则</span>
+                                    <label class="rc-checkbox-item">
+                                        <input type="checkbox" v-model="receivingChannelForm.isActualVolumeWeight">
+                                        <span>按实际体积计费</span>
+                                    </label>
+                                </div>
+                                <div class="rc-grid">
+                                    <div class="rc-item">
+                                        <label class="rc-label required">计费类型</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.billingType">
+                                            <option value="">请选择计费类型</option>
+                                            <option value="kg">按KG计费</option>
+                                            <option value="lb">按LB计费</option>
+                                            <option value="cbf">按CBF计费</option>
+                                            <option value="cbm">按CBM计费</option>
+                                            <option value="fcl">整柜</option>
+                                            <option value="density">按密度</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">计泡系数</label>
+                                        <input type="number" class="rc-input"
+                                            v-model="receivingChannelForm.volumeFactor">
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">单件结算重量进位规则</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.itemWeightRounding">
+                                            <option value="">请选择进位规则</option>
+                                            <option value="round">四舍五入</option>
+                                            <option value="ceil">向上取整</option>
+                                            <option value="floor">向下取整</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">多箱计算规则</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.multiBoxRule">
+                                            <option value="">请选择计算规则</option>
+                                            <option value="sum_then_compare">先比较再叠加</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">总价结算重量进位规则</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.totalWeightRounding">
+                                            <option value="">请选择进位规则</option>
+                                            <option value="round">四舍五入</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">总结算进位小数点</label>
+                                        <select class="rc-select" v-model="receivingChannelForm.roundingPrecision">
+                                            <option value="">请选择小数点</option>
+                                            <option value="3">小数点3位</option>
+                                            <option value="2">小数点2位</option>
+                                            <option value="1">小数点1位</option>
+                                        </select>
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">单箱最低计费体积</label>
+                                        <input type="number" class="rc-input"
+                                            v-model="receivingChannelForm.minBoxVolume">
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">单票最低计费体积</label>
+                                        <input type="number" class="rc-input"
+                                            v-model="receivingChannelForm.minOrderVolume">
+                                    </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">按货物品类报价</label>
+                                        <div class="rc-radio-group">
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.isQuoteByCategory" :value="false">
+                                                否</label>
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.isQuoteByCategory" :value="true">
+                                                是</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rc-item" style="margin-top: 16px; padding: 0 10px;">
+                                    <label class="rc-label">常用费用</label>
+                                    <select class="rc-select" v-model="receivingChannelForm.commonFees" multiple
+                                        style="height: auto; min-height: 32px;">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- 区块3: 尾程派送 -->
+                            <div class="rc-section">
+                                <div class="rc-section-title">
+                                    <div style="display: flex; align-items: center; gap: 20px;">
+                                        <span>尾程派送</span>
+                                        <div class="rc-radio-group">
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.deliveryMethod" value="truck">
+                                                卡车派送</label>
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.deliveryMethod" value="express">
+                                                快递派送</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding: 0 10px;">
+                                    <div class="rc-rule-row">
+                                        <div class="rc-rule-label">单箱任意边长</div>
+                                        <span>最小</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxLengthMin">
+                                        <span>最大</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxLengthMax">
+                                        <select class="rc-select rc-unit-select"
+                                            v-model="receivingChannelForm.boxLengthUnit">
+                                            <option value="CM">CM</option>
+                                        </select>
+                                        <label class="rc-radio-item"><input type="radio"
+                                                v-model="receivingChannelForm.boxLengthLimitAction" value="notify">
+                                            超过提醒</label>
+                                    </div>
+                                    <div class="rc-rule-row">
+                                        <div class="rc-rule-label">单箱重量</div>
+                                        <span>最小</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxWeightMin">
+                                        <span>最大</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxWeightMax">
+                                        <select class="rc-select rc-unit-select"
+                                            v-model="receivingChannelForm.boxWeightUnit">
+                                            <option value="KG">KG</option>
+                                        </select>
+                                        <label class="rc-radio-item"><input type="radio"
+                                                v-model="receivingChannelForm.boxWeightLimitAction" value="notify">
+                                            超过提醒</label>
+                                    </div>
+                                    <div class="rc-rule-row">
+                                        <div class="rc-rule-label">单箱体积</div>
+                                        <span>最小</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxVolumeMin">
+                                        <span>最大</span><input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.boxVolumeMax">
+                                        <select class="rc-select rc-unit-select"
+                                            v-model="receivingChannelForm.boxVolumeUnit">
+                                            <option value="CBM">CBM</option>
+                                        </select>
+                                        <label class="rc-radio-item"><input type="radio"
+                                                v-model="receivingChannelForm.boxVolumeLimitAction" value="notify">
+                                            超过提醒</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 区块4: 渠道时效 -->
+                            <div class="rc-section">
+                                <div class="rc-section-title">
+                                    <span>渠道时效 <i class="rc-tip-icon">ℹ️</i></span>
+                                </div>
+                                <div
+                                    style="display: flex; gap: 40px; padding: 0 10px; margin-top: 10px; white-space: nowrap;">
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
+                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效选择</div>
+                                        <select class="rc-select" v-model="receivingChannelForm.timelinessSelection"
+                                            style="width: 100%;">
+                                            <option value="">请选择</option>
+                                            <option value="下单到签收">下单到签收</option>
+                                            <option value="入仓到签收">入仓到签收</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
+                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效类型</div>
+                                        <select class="rc-select" v-model="receivingChannelForm.timelinessType"
+                                            style="width: 100%;">
+                                            <option value="">请选择</option>
+                                            <option value="承诺时效">承诺时效</option>
+                                            <option value="参考时效">参考时效</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: flex; gap: 40px; padding: 0 10px; margin-top: 16px; margin-bottom: 16px; white-space: nowrap;">
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
+                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效单位</div>
+                                        <select class="rc-select" v-model="receivingChannelForm.timelinessUnit"
+                                            style="width: 100%;">
+                                            <option value="">请选择</option>
+                                            <option value="自然日">自然日</option>
+                                            <option value="工作日">工作日</option>
+                                            <option value="小时">小时</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
+                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效范围</div>
+                                        <div
+                                            style="display: flex; align-items: center; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; height: 32px; background: #fff;">
+                                            <input type="text" v-model="receivingChannelForm.timelinessMin"
+                                                placeholder="最短时效"
+                                                style="border: none; flex: 1; text-align: center; height: 100%; outline: none; width: 50%; font-size: 13px;"
+                                                @input="handleTimelinessInput('timelinessMin')">
+                                            <span
+                                                style="padding: 0 10px; color: #999; background: #fafafa; height: 100%; display: flex; align-items: center; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8; font-size: 13px;">-</span>
+                                            <input type="text" v-model="receivingChannelForm.timelinessMax"
+                                                placeholder="最长时效"
+                                                style="border: none; flex: 1; text-align: center; height: 100%; outline: none; width: 50%; font-size: 13px;"
+                                                @input="handleTimelinessInput('timelinessMax')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 40px; padding: 0 10px; white-space: nowrap;">
+                                    <div class="rc-item">
+                                        <input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.departureReminderDays" placeholder="请输入">
+                                        <span class="rc-unit">天仍未出境则提醒</span>
+                                    </div>
+                                    <div class="rc-item">
+                                        <input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.unloadingReminderDays" placeholder="请输入">
+                                        <span class="rc-unit">天仍未倒装则提醒</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 底部按钮 -->
+                            <div class="rc-footer">
+                                <button class="btn btn-primary" style="display: flex; align-items: center; gap: 6px;"
+                                    @click="saveReceivingChannel">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="white">
+                                        <path
+                                            d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+                                    </svg>
+                                    保存
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1646,12 +2394,28 @@
                                 <span class="dm-tab" :class="{ active: deliveryModifyTab === 'business' }"
                                     @click="deliveryModifyTab = 'business'">商业地址</span>
                                 <span class="dm-tab" :class="{ active: deliveryModifyTab === 'customer' }"
-                                    @click="deliveryModifyTab = 'customer'">客户信息</span>
-                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'hold' }"
-                                    @click="deliveryModifyTab = 'hold'">HOLD件</span>
-                                <span class="dm-tab" :class="{ active: deliveryModifyTab === 'signed' }"
-                                    @click="deliveryModifyTab = 'signed'">已签收</span>
+                                    @click="deliveryModifyTab = 'customer'">客户自提</span>
                             </div>
+                            <label class="dm-checkbox-item">
+                                <input type="checkbox" v-model="deliveryModifyForm.isHold">
+                                <span>HOLD货</span>
+                            </label>
+                            <label class="dm-checkbox-item">
+                                <input type="checkbox" v-model="deliveryModifyForm.isSigned">
+                                <span>已签收</span>
+                            </label>
+
+                            <div class="dm-radio-group" style="margin-left: 20px; gap: 15px;">
+                                <span style="font-size: 12px; color: #666;">尾程派送方式:</span>
+                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                        value="truck">卡派</label>
+                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                        value="express">快递派</label>
+                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                        value="amazon">亚马逊自提</label>
+                            </div>
+
+                            <div style="flex: 1"></div>
                             <button class="btn btn-primary dm-copy-btn" @click="copyDeliveryInfo">复制</button>
                         </div>
 
@@ -1661,15 +2425,6 @@
                                 <!-- 左侧列 -->
                                 <div class="dm-col dm-col-left">
 
-                                    <div class="dm-row">
-                                        <label class="dm-label">尾程派送方式</label>
-                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.lastMileMethod">
-                                            <option value="">请选择</option>
-                                            <option value="truck">卡派</option>
-                                            <option value="express">快递派</option>
-                                            <option value="amazon">亚马逊自提</option>
-                                        </select>
-                                    </div>
                                     <div class="dm-row">
                                         <label class="dm-label">平台</label>
                                         <select class="dm-input dm-w200" v-model="deliveryModifyForm.platform">
@@ -1704,31 +2459,40 @@
                                         </select>
                                     </div>
 
-                                    <div class="dm-row">
-                                        <label class="dm-label">地址编号</label>
-                                        <input type="text" class="dm-input dm-w200"
-                                            v-model="deliveryModifyForm.addressNo" placeholder="请输入">
-                                    </div>
-                                </div>
+                                    <!-- 快递派显示快递信息 -->
+                                    <template v-if="deliveryModifyForm.lastMileMethod === 'express'">
+                                        <div class="dm-row">
+                                            <label class="dm-label">快递公司</label>
+                                            <select class="dm-input dm-w200" v-model="deliveryModifyForm.tailCarrier">
+                                                <option value="">请选择</option>
+                                                <option value="ups">UPS</option>
+                                                <option value="fedex">Fedex</option>
+                                            </select>
+                                        </div>
+                                        <div class="dm-row">
+                                            <label class="dm-label">快递单号</label>
+                                            <input type="text" class="dm-input dm-w200"
+                                                v-model="deliveryModifyForm.tailTrackingNumber" placeholder="请输入">
+                                        </div>
+                                    </template>
 
-                                <!-- 中间列 -->
-                                <div class="dm-col dm-col-middle">
                                     <!-- 卡派显示ISA预约号 -->
                                     <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'truck'">
                                         <label class="dm-label">ISA预约号</label>
                                         <input type="text" class="dm-input dm-w200"
                                             v-model="deliveryModifyForm.isaNumber" placeholder="请输入ISA预约号">
                                     </div>
-                                    <!-- 快递派显示承运商 (中列) -->
-                                    <div class="dm-row" v-else-if="deliveryModifyForm.lastMileMethod === 'express'">
-                                        <label class="dm-label">快递公司</label>
-                                        <select class="dm-input dm-w200" v-model="deliveryModifyForm.tailCarrier">
-                                            <option value="">请选择</option>
-                                            <option value="ups">UPS</option>
-                                            <option value="fedex">Fedex</option>
-                                        </select>
+
+                                    <!-- 亚马逊自提显示亚马逊订单号 -->
+                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'amazon'">
+                                        <label class="dm-label">亚马逊订单号</label>
+                                        <input type="text" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.amazonOrderNo" placeholder="请输入亚马逊订单号">
                                     </div>
-                                    <div class="dm-row dm-row-empty" v-else></div>
+                                </div>
+
+                                <!-- 中间列 -->
+                                <div class="dm-col dm-col-middle">
                                     <div class="dm-row">
                                         <label class="dm-label">国家/地区</label>
                                         <select class="dm-input dm-w200" v-model="deliveryModifyForm.country">
@@ -1736,7 +2500,7 @@
                                         </select>
                                     </div>
                                     <div class="dm-row">
-                                        <label class="dm-label">省/州</label>
+                                        <label class="dm-label">省/州/市</label>
                                         <select class="dm-input dm-w200" v-model="deliveryModifyForm.state">
                                             <option value="">请选择</option>
                                         </select>
@@ -1770,13 +2534,6 @@
 
                                 <!-- 右侧列 -->
                                 <div class="dm-col dm-col-right">
-                                    <!-- 快递派显示转单号 (右列) -->
-                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'express'">
-                                        <label class="dm-label">快递单号</label>
-                                        <input type="text" class="dm-input dm-w200"
-                                            v-model="deliveryModifyForm.tailTrackingNumber" placeholder="请输入转单号">
-                                    </div>
-                                    <div class="dm-row dm-row-empty" v-else></div>
                                     <div class="dm-row dm-row-radio">
                                         <label class="dm-label">◎</label>
                                         <div class="dm-radio-group">
@@ -1828,12 +2585,22 @@
     </div>
 
     <script>
-        const { createApp, reactive, ref, computed, onMounted } = Vue
+        const { createApp, reactive, ref, computed, onMounted, onUnmounted, watch } = Vue
 
         createApp({
             setup() {
                 let idCounter = 1
                 const currentPage = ref('config')
+                const currentTransport = ref('ocean')
+                const currentType = ref('fcl')
+
+                watch(currentTransport, (newVal) => {
+                    if (newVal === 'air') {
+                        currentType.value = 'lcl'
+                    } else {
+                        currentType.value = 'fcl'
+                    }
+                })
 
                 const createEmptyRow = () => ({
                     id: idCounter++,
@@ -1847,20 +2614,38 @@
                 })
 
                 const statusOptions = [
-                    { label: '已入库', value: 'warehoused' },
+                    { label: '已下单', value: 'placed' },
+                    { label: '已取消', value: 'cancelled' },
+                    { label: '已拣货', value: 'picking' },
+                    { label: '已订舱', value: 'booked' },
+                    { label: '已放舱', value: 'letgospace' },
+                    { label: '已入仓(港前)', value: 'beputinstorage' },
+                    { label: '已退仓', value: 'bereturnstorage' },
+                    { label: '已提空柜', value: 'extractemptybox' },
+                    { label: '已装柜', value: 'encasement' },
+                    { label: '已还重柜', value: 'restoreheavybox' },
+                    { label: '已配载', value: 'shipment' },
+                    { label: '已出仓(港前)', value: 'outofwarehouse' },
                     { label: '已安排报关', value: 'customs_arranged' },
+                    { label: '出口查验', value: 'exportcheck' },
                     { label: '已出口放行', value: 'export_released' },
-                    { label: '已离港-海空', value: 'departed_air' },
-                    { label: '已离港-陆铁', value: 'departed_rail' },
+                    { label: '已退关', value: 'export_cancelled' },
+                    { label: '已离港', value: 'departed' },
                     { label: '已发车', value: 'dispatched' },
-                    { label: '已到港-空运', value: 'arrived_air' },
-                    { label: '已到港-海运', value: 'arrived_sea' },
-                    { label: '已到港-铁运/卡航', value: 'arrived_rail' },
-                    { label: '已安排清关', value: 'clearance_arranged' },
+                    { label: '已到港', value: 'arrived' },
+                    { label: '已到站', value: 'arrived_station' },
+                    { label: '已清关', value: 'clearance' },
                     { label: '已进口放行', value: 'import_released' },
+                    { label: '进口查验', value: 'importcheck' },
+                    { label: '已提重柜', value: 'extractcontainer' },
                     { label: '已拆柜', value: 'unpacked' },
-                    { label: '已约仓', value: 'warehouse_booked' },
-                    { label: '已送仓', value: 'delivered_warehouse' },
+                    { label: '已入仓(港后)', value: 'entrytransferwarehouse' },
+                    { label: '已还空柜', value: 'returnedemptybox' },
+                    { label: '已约交FBX仓', value: 'entrytfbxwarehouse' },
+                    { label: '已出仓(港后)', value: 'outtransferwarehouse' },
+                    { label: '已派送', value: 'delivery' },
+                    { label: '派送异常', value: 'deliveryfail' },
+                    { label: '已签收', value: 'clientsign' },
                     { label: '分批送仓', value: 'batch_delivery' },
                 ]
 
@@ -1868,42 +2653,536 @@
                     { name: '揽收', code: 'AF/NS', node: '揽收', portType: '港前' },
                     { name: '出口报关', code: 'K1/O1', node: '报关', portType: '港前' },
                     { name: '出口放行', code: 'K2/O2', node: '报关', portType: '港前' },
-                    { name: '离港-海空', code: 'VD/NS', node: '干线', portType: '港前' },
-                    { name: '离港-陆铁', code: 'AL/NS', node: '干线', portType: '港前' },
-                    { name: '到港-海运', code: 'VA/NS', node: '干线', portType: '港后' },
-                    { name: '到港-空运', code: 'K1/AJ', node: '干线', portType: '港后' },
-                    { name: '到港 -陆铁', code: 'UR/NS', node: '干线', portType: '港后' },
-                    { name: '进口报关', code: 'K1/RD', node: '报关', portType: '港后' },
-                    { name: '进口放行', code: 'K2/RD', node: '报关', portType: '港后' },
+                    { name: '已离港', code: 'VD/NS', node: '干线', portType: '港前' },
+                    { name: '已离港', code: 'AL/NS', node: '干线', portType: '港前' },
+                    { name: '已到港', code: 'VA/NS', node: '干线', portType: '港后' },
+                    { name: '已到港', code: 'K1/AJ', node: '干线', portType: '港后' },
+                    { name: '已到港', code: 'UR/NS', node: '干线', portType: '港后' },
+                    { name: '已清关', code: 'K1/RD', node: '清关', portType: '港后' },
+                    { name: '进口放行', code: 'K2/RD', node: '清关', portType: '港后' },
                     { name: '拆柜', code: 'X4/FN', node: '海外仓', portType: '港后' },
-                    { name: '约仓', code: 'AG/AG', node: '海外仓', portType: '港后' },
-                    { name: '送仓', code: 'D1/NS', node: '海外仓', portType: '港后' },
+                    { name: '已约交FBX仓', code: 'AG/AG', node: '海外仓', portType: '港后' },
+                    { name: '已签收', code: 'D1/NS', node: '海外仓', portType: '港后' },
                     { name: '分批送仓', code: '1X/NS', node: '海外仓', portType: '港后' },
                 ]
 
-                const defaultTrackNames = ['揽收', '出口放行', '离港-海空', '离港-陆铁', '到港-海运', '到港-空运', '到港 -陆铁', '进口放行', '拆柜', '约仓', '送仓']
+                const defaultTrackNames = ['揽收', '已订舱', '已放舱', '已离港', '已到港', '已清关', '进口放行', '拆柜', '已约交FBX仓', '已签收', '分批送仓']
 
                 const trackNameOptions = trackData
                     .filter(t => !defaultTrackNames.includes(t.name))
                     .map(t => ({ label: t.name, value: t.name }))
 
-                const createDefaultRows = () => {
-                    return defaultTrackNames.map(name => {
-                        const info = trackData.find(t => t.name === name)
-                        return {
+                const createDefaultRows = (transportKey = '') => {
+                    const rows = [{
+                        id: idCounter++,
+                        status: 'placed',
+                        statusCode: 'PLACEORDER',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'cancelled',
+                        statusCode: 'CANCELSTOWAGE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }]
+
+                    // 海运(ocean-fcl, ocean-lcl)、空运(air-lcl)以及铁运(rail-fcl, rail-lcl)需额外带有已订舱、已放舱
+                    if (transportKey.startsWith('ocean') || transportKey.startsWith('air') || transportKey.startsWith('rail')) {
+                        rows.push({
                             id: idCounter++,
-                            status: '',
-                            statusCode: '',
-                            trackName: name,
-                            trackCode: info ? info.code : '',
-                            node: info ? info.node : '',
-                            portType: info ? info.portType : '',
-                            enabled: true
-                        }
+                            status: 'booked',
+                            statusCode: 'BOOKINGSPACE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'letgospace',
+                            statusCode: 'LETGOSPACE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，需在已放舱之后附加专属的已提空柜、已装柜、已还重柜
+                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'extractemptybox',
+                            statusCode: 'EMPTY CONTIANER',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'encasement',
+                            statusCode: 'ENCASEMENT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'restoreheavybox',
+                            statusCode: 'RESTOREHEAVYBOX',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 散货(所有 -lcl 结尾的选项) 需额外带有已入仓(港前)、已退仓、已拣货等
+                    if (transportKey.endsWith('lcl')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'beputinstorage',
+                            statusCode: 'BEPUTINSTORAGE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '揽收',
+                            trackCode: 'AF/NS',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'bereturnstorage',
+                            statusCode: 'BERETURNSTORAGE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'picking',
+                            statusCode: 'PICKINGCOMPLETED',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'shipment',
+                            statusCode: 'SHIPMENT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'outofwarehouse',
+                            statusCode: 'OUTOFWAREHOUSE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 最后所有分类共享的通用尾部节点
+                    rows.push({
+                        id: idCounter++,
+                        status: 'customs_arranged',
+                        statusCode: 'CLEARANCEOFGOODS',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '出口报关',
+                        trackCode: 'K1/O1',
+                        node: '报关',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'exportcheck',
+                        statusCode: 'EXPORTCHECK',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '报关',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'export_released',
+                        statusCode: 'EXPORTPERMITTHROUGH',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '出口放行',
+                        trackCode: 'K2/O1',
+                        node: '报关',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'export_cancelled',
+                        statusCode: 'EXPORT_CANCELLED',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '报关',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    })                    // 海运、空运最终环节追加已离港
+                    if (transportKey.startsWith('ocean') || transportKey.startsWith('air')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'departed',
+                            statusCode: 'OFFTHEHARBOUR',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已离港',
+                            trackCode: 'VD/NS',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 铁运、陆运最终环节追加已发车
+                    if (transportKey.startsWith('rail') || transportKey.startsWith('land')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'dispatched',
+                            statusCode: 'OFFTHEHARBOUR',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已离港',
+                            trackCode: 'AL/NS',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 海运追加专属到港节点
+                    if (transportKey.startsWith('ocean')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'arrived',
+                            statusCode: 'ARRIVALATPORT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已到港',
+                            trackCode: 'VA/NS',
+                            node: '干线',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 空运追加专属到港节点
+                    if (transportKey.startsWith('air')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'arrived',
+                            statusCode: 'ARRIVALATPORT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已到港',
+                            trackCode: 'K1/AJ',
+                            node: '干线',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 铁运、陆运追加专属到站(港)节点
+                    if (transportKey.startsWith('rail') || transportKey.startsWith('land')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'arrived_station',
+                            statusCode: 'ARRIVALATPORT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已到港',
+                            trackCode: 'UR/NS',
+                            node: '干线',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 最后再将所有的环境尾部追加公共的已清关、进口查验、已进口放行节点
+                    rows.push({
+                        id: idCounter++,
+                        status: 'clearance',
+                        statusCode: 'CLEARANCE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '已清关',
+                        trackCode: 'K1/RD',
+                        node: '清关',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'importcheck',
+                        statusCode: 'IMPORTCHECK',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '清关',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'import_released',
+                        statusCode: 'IMPORTPERMITTHROUGH',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '进口放行',
+                        trackCode: 'K2/RD',
+                        node: '清关',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
                     })
+
+                    // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，还需在所有的末尾（放行之后）追加最新专有节点：已提重柜
+                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'extractcontainer',
+                            statusCode: 'EXTRACTCONTAINER',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 最后再无论有无其它特有分支节点，全局所有品类都共有的彻底末端节点追加：已入仓(港后)、已拆柜
+                    rows.push({
+                        id: idCounter++,
+                        status: 'entrytransferwarehouse',
+                        statusCode: 'ENTRYTRANSFERWAREHOUSE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '海外仓',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'unpacked',
+                        statusCode: 'SPLITCONTAINER',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '已拆柜',
+                        trackCode: 'X4/FN',
+                        node: '海外仓',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    })
+
+                    // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，还需在真正的彻底末尾追加最终专属：已还空柜
+                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'returnedemptybox',
+                            statusCode: 'RETURNEDEMPTYBOX',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 作为所有节点（含独有枝干）全部跑完之后的纯正收关之末：追加全局最新已约交FBX仓、已出仓(港后)、已派送
+                    rows.push({
+                        id: idCounter++,
+                        status: 'entrytfbxwarehouse',
+                        statusCode: 'ENTRYTFBXWAREHOUSE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '已约交FBX仓',
+                        trackCode: 'AG/AG',
+                        node: '海外仓',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'outtransferwarehouse',
+                        statusCode: 'OUTTRANSFERWAREHOUSE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '海外仓',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'delivery',
+                        statusCode: 'DELIVERY',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '派送',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'deliveryfail',
+                        statusCode: 'DELIVERYFAIL',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '派送',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'clientsign',
+                        statusCode: 'CLIENTSIGN',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '已签收',
+                        trackCode: 'D1/NS',
+                        node: '',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    })
+
+                    return rows
                 }
 
-                const configItems = reactive(createDefaultRows())
+                const allConfigItems = reactive({
+                    'ocean-fcl': createDefaultRows('ocean-fcl'),
+                    'ocean-lcl': createDefaultRows('ocean-lcl'),
+                    'air-lcl': createDefaultRows('air-lcl'),
+                    'rail-fcl': createDefaultRows('rail-fcl'),
+                    'rail-lcl': createDefaultRows('rail-lcl'),
+                    'land-fcl': createDefaultRows('land-fcl'),
+                    'land-lcl': createDefaultRows('land-lcl')
+                })
+
+                const activeKey = computed(() => {
+                    if (currentTransport.value === 'air') return 'air-lcl'
+                    return `${currentTransport.value}-${currentType.value}`
+                })
+
+                const configItems = computed(() => allConfigItems[activeKey.value])
                 const toast = reactive({ show: false, message: '', isError: false })
 
                 const showToast = (msg, isError = false) => {
@@ -1915,7 +3194,27 @@
 
                 const isDefaultTrack = (trackName) => defaultTrackNames.includes(trackName)
 
-                const onStatusChange = (item) => { item.statusCode = item.status }
+                const getAvailableStatusOptions = (currentItem) => {
+                    const usedStatuses = configItems.value.map(i => i.status).filter(s => s && s !== currentItem.status)
+                    return statusOptions.filter(opt => !usedStatuses.includes(opt.value))
+                }
+
+                const onStatusChange = (item) => {
+                    item.statusCode = item.status
+                    const label = statusOptions.find(o => o.value === item.status)?.label
+                    const info = trackData.find(t => t.name === label)
+                    if (info) {
+                        item.trackName = info.name
+                        item.trackCode = info.code
+                        item.node = info.node
+                        item.portType = info.portType
+                    } else {
+                        item.trackName = ''
+                        item.trackCode = ''
+                        item.node = ''
+                        item.portType = ''
+                    }
+                }
 
                 const onTrackNameChange = (item) => {
                     const info = trackData.find(t => t.name === item.trackName)
@@ -1932,7 +3231,7 @@
 
                 const onEnabledChange = (changedItem) => {
                     if (isDefaultTrack(changedItem.trackName)) {
-                        configItems.forEach(item => {
+                        configItems.value.forEach(item => {
                             if (isDefaultTrack(item.trackName)) {
                                 item.enabled = changedItem.enabled
                             }
@@ -1940,66 +3239,92 @@
                     }
                 }
 
-                const addRow = (index) => { configItems.splice(index + 1, 0, createEmptyRow()) }
-                const deleteRow = (index) => { configItems.splice(index, 1) }
+                const addRow = (index) => { configItems.value.splice(index + 1, 0, createEmptyRow()) }
+                const deleteRow = (index) => { configItems.value.splice(index, 1) }
 
                 const loadConfig = () => {
-                    const saved = localStorage.getItem('track-config')
+                    const saved = localStorage.getItem('track-config-all')
                     if (saved) {
-                        const data = JSON.parse(saved)
-                        configItems.length = 0
-                        data.forEach(item => { configItems.push({ ...item, id: idCounter++ }) })
-                        if (configItems.length === 0) { configItems.push(createEmptyRow()) }
+                        try {
+                            const data = JSON.parse(saved)
+                            for (const key in data) {
+                                if (allConfigItems[key]) {
+                                    allConfigItems[key].length = 0
+
+                                    const savedRows = data[key]
+                                    const sysFixedRows = createDefaultRows(key).filter(r => r.isFixed)
+
+                                    // 以用户保存的顺序为准进行加载，并同步处理系统固定行的合并与界面状态补全
+                                    const merged = savedRows.map(savedRow => {
+                                        const sysMatch = sysFixedRows.find(s => s.statusCode === savedRow.statusCode)
+                                        if (sysMatch && (savedRow.isFixed || sysMatch.isFixed)) {
+                                            return {
+                                                ...sysMatch,
+                                                ...savedRow,
+                                                isFixed: true,
+                                                isSaved: true
+                                            }
+                                        }
+                                        return { ...savedRow, isSaved: true }
+                                    })
+
+                                    // 如果系统版本更新增加了新的固定行，则追加到末尾
+                                    sysFixedRows.forEach(sysRow => {
+                                        if (!merged.find(m => m.statusCode === sysRow.statusCode)) {
+                                            merged.push({ ...sysRow, isSaved: true })
+                                        }
+                                    })
+
+                                    merged.forEach(item => { allConfigItems[key].push({ ...item, id: idCounter++ }) })
+                                    if (allConfigItems[key].length === 0) { allConfigItems[key].push(createEmptyRow()) }
+                                }
+                            }
+                        } catch (e) {
+                            console.error('配置文件解析失败', e)
+                        }
                     }
                 }
 
                 const saveConfig = () => {
-                    const requiredTracks = ['揽收', '出口放行', '进口放行', '拆柜', '约仓', '送仓']
-                    const departGroup = ['离港-海空', '离港-陆铁']
-                    const arriveGroup = ['到港-海运', '到港-空运', '到港 -陆铁']
+                    const currentItems = configItems.value
 
-                    const trackNames = configItems.filter(i => i.trackName).map(i => i.trackName)
-                    const duplicateTrackName = trackNames.find((name, idx) => trackNames.indexOf(name) !== idx)
-                    if (duplicateTrackName) {
-                        showToast(`轨迹名称 "${duplicateTrackName}" 重复`, true)
-                        return
-                    }
-
-                    const statuses = configItems.filter(i => i.status).map(i => i.status)
-                    const duplicateStatus = statuses.find((s, idx) => statuses.indexOf(s) !== idx)
-                    if (duplicateStatus) {
-                        const label = statusOptions.find(o => o.value === duplicateStatus)?.label || duplicateStatus
-                        showToast(`轨迹状态 "${label}" 重复`, true)
-                        return
-                    }
-
-                    for (const trackName of requiredTracks) {
-                        const item = configItems.find(i => i.trackName === trackName)
-                        if (!item || !item.status) {
-                            showToast(`请填写 "${trackName}" 的轨迹状态`, true)
+                    // 校验工作单状态必选
+                    for (let i = 0; i < currentItems.length; i++) {
+                        if (!currentItems[i].status) {
+                            showToast(`请选择第 ${i + 1} 行的工作单状态`, true)
                             return
                         }
                     }
 
-                    if (!configItems.some(i => departGroup.includes(i.trackName) && i.status)) {
-                        showToast('请至少填写 "离港-海空" 或 "离港-陆铁" 其中一项', true)
+                    // 仅保留一些基础的重名校验
+                    const trackNames = currentItems.filter(i => i.trackName).map(i => i.trackName)
+                    const duplicateTrackName = trackNames.find((name, idx) => trackNames.indexOf(name) !== idx)
+                    if (duplicateTrackName) {
+                        showToast(`当前分类：轨迹名称 "${duplicateTrackName}" 重复`, true)
                         return
                     }
 
-                    if (!configItems.some(i => arriveGroup.includes(i.trackName) && i.status)) {
-                        showToast('请至少填写 "到港" 类型其中一项', true)
+                    const statuses = currentItems.filter(i => i.status).map(i => i.status)
+                    const duplicateStatus = statuses.find((s, idx) => statuses.indexOf(s) !== idx)
+                    if (duplicateStatus) {
+                        const label = statusOptions.find(o => o.value === duplicateStatus)?.label || duplicateStatus
+                        showToast(`当前分类：状态 "${label}" 重复`, true)
                         return
                     }
 
-                    localStorage.setItem('track-config', JSON.stringify(configItems))
+                    // 全部标记为已保存，从而隐藏自定义行的下拉框
+                    currentItems.forEach(item => {
+                        item.isSaved = true
+                    })
+
+                    localStorage.setItem('track-config-all', JSON.stringify(allConfigItems))
                     showToast('✓ 配置已保存')
                 }
 
                 const resetConfig = () => {
-                    configItems.length = 0
-                    createDefaultRows().forEach(row => configItems.push(row))
-                    localStorage.removeItem('track-config')
-                    showToast('配置已重置')
+                    allConfigItems[activeKey.value] = createDefaultRows(activeKey.value)
+                    localStorage.setItem('track-config-all', JSON.stringify(allConfigItems))
+                    showToast('当前分类配置已重置')
                 }
 
                 // ========== 添加轨迹节点 ==========
@@ -2037,7 +3362,7 @@
                 }
 
                 const enabledTrackOptions = computed(() => {
-                    return configItems
+                    return configItems.value
                         .filter(item => item.enabled && item.status && item.trackName)
                         .map(item => ({
                             status: item.status,
@@ -2320,6 +3645,9 @@
                     lastMileMethod: '',
                     warehouse: '',
                     createTime: '',
+                    isHold: false,
+                    isSigned: false,
+                    amazonOrderNo: '',
                     createTimeEnabled: false,
                     taxNo1: '',
                     taxNo1Type: '',
@@ -2449,11 +3777,109 @@
                     item.customTrackNameEn = found ? found.trackNameEn : ''
                 }
 
+                // ========== 收货渠道页面 ==========
+                const isEditChannel = ref(false)
+
+                // 国家/地区弹框逻辑
+                const showCountrySelect = ref(false)
+                const countrySelectRef = ref(null)
+                // 暂时初始化一些占位待选项
+                const channelCountryOptions = ref([
+                    { label: '美国', value: 'US' },
+                    { label: '英国', value: 'UK' },
+                    { label: '加拿大', value: 'CA' },
+                    { label: '澳大利亚', value: 'AU' },
+                    { label: '日本', value: 'JP' },
+                    { label: '德国', value: 'DE' },
+                    { label: '法国', value: 'FR' },
+                ])
+                const toggleCountrySelect = () => {
+                    showCountrySelect.value = !showCountrySelect.value
+                }
+                const closeCountrySelect = (e) => {
+                    if (countrySelectRef.value && !countrySelectRef.value.contains(e.target)) {
+                        showCountrySelect.value = false
+                    }
+                }
+                onMounted(() => {
+                    document.addEventListener('click', closeCountrySelect)
+                })
+                onUnmounted(() => {
+                    document.removeEventListener('click', closeCountrySelect)
+                })
+
+                const receivingChannelForm = reactive({
+                    code: '',
+                    name: '',
+                    transportType: '',
+                    isExpress: false,
+                    countries: [],
+                    mainlineLevel: '',
+                    receivableCargo: '',
+                    receivableCargoType: '',
+                    taxType: '',
+                    mustUploadPod: false,
+                    billingType: '',
+                    isActualVolumeWeight: false,
+                    volumeFactor: '',
+                    itemWeightRounding: '',
+                    multiBoxRule: '',
+                    totalWeightRounding: '',
+                    roundingPrecision: '',
+                    minBoxVolume: '',
+                    minOrderVolume: '',
+                    isQuoteByCategory: false,
+                    commonFees: [],
+                    deliveryMethod: '',
+                    boxLengthMin: '',
+                    boxLengthMax: '',
+                    boxLengthUnit: 'CM',
+                    boxLengthLimitAction: '',
+                    boxWeightMin: '',
+                    boxWeightMax: '',
+                    boxWeightUnit: 'KG',
+                    boxWeightLimitAction: '',
+                    boxVolumeMin: '',
+                    boxVolumeMax: '',
+                    boxVolumeUnit: 'CBM',
+                    boxVolumeLimitAction: '',
+                    departureReminderDays: '',
+                    unloadingReminderDays: '',
+                    timelinessSelection: '',
+                    timelinessType: '',
+                    timelinessUnit: '',
+                    timelinessMin: '',
+                    timelinessMax: ''
+                })
+
+                const handleTimelinessInput = (field) => {
+                    let val = receivingChannelForm[field];
+                    if (!val) return;
+                    val = val.toString().replace(/[^\d.]/g, '');
+                    let parts = val.split('.');
+                    if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
+                    if (parts[0].length > 3) parts[0] = parts[0].slice(0, 3);
+                    if (parts.length > 1 && parts[1].length > 1) parts[1] = parts[1].slice(0, 1);
+                    receivingChannelForm[field] = parts.join('.');
+                }
+
+                const saveReceivingChannel = () => {
+                    if (!receivingChannelForm.code) { showToast('请输入代码', true); return }
+                    if (!receivingChannelForm.name) { showToast('请输入渠道名称', true); return }
+                    if (!receivingChannelForm.timelinessSelection) { showToast('请选择时效选择', true); return }
+                    if (!receivingChannelForm.timelinessType) { showToast('请选择时效类型', true); return }
+                    if (!receivingChannelForm.timelinessUnit) { showToast('请选择时效单位', true); return }
+                    if (!receivingChannelForm.timelinessMin || !receivingChannelForm.timelinessMax) { showToast('请输入完整的时效范围', true); return }
+                    if (parseFloat(receivingChannelForm.timelinessMin) > parseFloat(receivingChannelForm.timelinessMax)) { showToast('最长时效需大于等于最短时效', true); return }
+
+                    showToast('✓ 保存成功')
+                }
+
                 return {
-                    currentPage,
+                    currentPage, currentTransport, currentType,
                     configItems, statusOptions, trackNameOptions, toast,
                     saveConfig, resetConfig, addRow, deleteRow,
-                    isDefaultTrack, onStatusChange, onTrackNameChange, onEnabledChange,
+                    isDefaultTrack, getAvailableStatusOptions, onStatusChange, onTrackNameChange, onEnabledChange,
                     nodeForm, countryOptions, cityOptions, enabledTrackOptions, currentDateTime, minDateTime, isYueCang, todayDateTime, maxFutureDateTime,
                     onCountryChange, onNodeTrackStatusChange, resetNodeForm, submitNode,
                     demoForm, warehouseOptions, warehouseInfo, onWarehouseChange, addDemoNode, pushDemo,
@@ -2462,8 +3888,13 @@
                     bookingForm, pushBooking,
                     warehouseForm, submitWarehouse, postalCodes, addPostalCode, removePostalCode,
                     deliveryModifyTab, deliveryModifyForm, copyDeliveryInfo,
+                    nodeOptions: ['揽收', '拖车', '报关', '干线', '清关', '海外仓'],
+                    portTypeOptions: ['港前', '港后'],
                     customTrackItems, addFirstCustomTrackRow, addCustomTrackRow, deleteCustomTrackRow, saveCustomTrack, onCustomTrackNameChange,
-                    showTemplateModal, templateForm, templateTags, openTemplateModal, closeTemplateModal, insertTag, restoreTrackName, restoreTrackNameEn
+                    showTemplateModal, templateForm, templateTags, openTemplateModal, closeTemplateModal, insertTag, restoreTrackName, restoreTrackNameEn,
+                    isEditChannel, receivingChannelForm, saveReceivingChannel,
+                    showCountrySelect, countrySelectRef, channelCountryOptions, toggleCountrySelect,
+                    handleTimelinessInput
                 }
             }
         }).mount('#app')
