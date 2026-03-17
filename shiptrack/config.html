@@ -101,6 +101,7 @@
         .header-actions {
             display: flex;
             gap: 10px;
+            margin-left: auto;
         }
 
         .btn {
@@ -208,6 +209,11 @@
 
         .type-tab.right-tab {
             border-radius: 0 3px 3px 0;
+            margin-left: -1px;
+        }
+
+        .type-tab.middle-tab {
+            border-radius: 0;
             margin-left: -1px;
         }
 
@@ -439,6 +445,52 @@
 
         .edit-icon {
             font-size: 14px;
+        }
+
+        /* 开关组件 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: #1890ff;
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(16px);
         }
 
         /* 轨迹模版弹窗样式 */
@@ -1363,19 +1415,22 @@
                                 @click="currentTransport = 'rail'">铁运</div>
                             <div class="transport-tab" :class="{ active: currentTransport === 'land' }"
                                 @click="currentTransport = 'land'">陆运</div>
+                            <div class="transport-tab" :class="{ active: currentTransport === 'bill' }"
+                                @click="currentTransport = 'bill'">单证</div>
                         </div>
 
                         <!-- 右侧表格区 -->
                         <div class="config-content">
                             <div class="header">
                                 <!-- 新增：整柜/散货 选项卡, 从下方移到原标题位置 -->
-                                <div class="type-tabs">
+                                <div class="type-tabs" v-if="currentTransport !== 'bill'">
                                     <span class="type-tab left-tab" v-if="currentTransport !== 'air'"
-                                        :class="{ active: currentType === 'fcl' }"
-                                        @click="currentType = 'fcl'">整柜</span>
+                                        :class="{ active: currentType === 'fcl' }" @click="currentType = 'fcl'">{{
+                                        currentTransport === 'land' ? '整车' : '整柜' }}</span>
                                     <span class="type-tab"
                                         :class="[ currentTransport === 'air' ? 'single-tab' : 'right-tab', { active: currentType === 'lcl' } ]"
-                                        @click="currentType = 'lcl'">散货</span>
+                                        @click="currentType = 'lcl'">{{ currentTransport === 'land' ? '零担' : '散货'
+                                        }}</span>
                                 </div>
                                 <div class="header-actions">
                                     <button class="btn" @click="resetConfig">重置</button>
@@ -1386,32 +1441,20 @@
                             <table class="config-table">
                                 <thead>
                                     <tr>
-                                        <th class="action-cell">+</th>
                                         <th>#</th>
                                         <th>工作单状态</th>
                                         <th>状态编码</th>
                                         <th>轨迹名称</th>
                                         <th>轨迹名称(英)</th>
-                                        <th>轨迹编码(亚马逊)</th>
+                                        <th v-if="currentTransport !== 'bill'">轨迹编码(亚马逊)</th>
                                         <th>节点</th>
                                         <th>港前/港后</th>
                                         <th>是否启用</th>
                                         <th>是否路由</th>
-                                        <th class="action-cell">删除</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(item, index) in configItems" :key="item.id">
-                                        <td class="action-cell">
-                                            <button class="btn-icon btn-add" @click="addRow(index)" title="新增行">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <circle cx="12" cy="12" r="10" />
-                                                    <line x1="12" y1="8" x2="12" y2="16" />
-                                                    <line x1="8" y1="12" x2="16" y2="12" />
-                                                </svg>
-                                            </button>
-                                        </td>
                                         <td class="row-number">{{ index + 1 }}</td>
                                         <td>
                                             <template v-if="item.isFixed || item.isSaved">
@@ -1440,7 +1483,7 @@
                                             </select>
                                         </td>
                                         <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
-                                        <td>
+                                        <td v-if="currentTransport !== 'bill'">
                                             <template v-if="item.isFixed || item.isSaved">
                                                 <span class="auto-text">{{ item.trackName ?
                                                     `${item.trackName}/${item.trackCode || '-'}` : '-' }}</span>
@@ -1491,16 +1534,6 @@
                                                 <span class="slider"></span>
                                             </label>
                                         </td>
-                                        <td class="action-cell">
-                                            <button v-if="!item.isFixed" class="btn-icon btn-delete"
-                                                @click="deleteRow(index)" title="删除行">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2">
-                                                    <path
-                                                        d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" />
-                                                </svg>
-                                            </button>
-                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1525,6 +1558,8 @@
                                     <th>轨迹名称</th>
                                     <th>轨迹名称(英)</th>
                                     <th>轨迹模版</th>
+                                    <th>客户端显示轨迹</th>
+                                    <th>推送客户群</th>
                                     <th>创建人</th>
                                     <th>创建时间</th>
                                     <th>修改人</th>
@@ -1558,6 +1593,18 @@
                                         <span class="template-edit" @click="openTemplateModal(item)">
                                             <span class="edit-icon">✏️</span>
                                         </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="item.showOnClient">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="item.pushToGroup">
+                                            <span class="toggle-slider"></span>
+                                        </label>
                                     </td>
                                     <td><span class="auto-text">{{ item.creator || '-' }}</span></td>
                                     <td><span class="auto-text">{{ item.createTime || '-' }}</span></td>
@@ -1630,6 +1677,10 @@
                                     <span>收货渠道</span>
                                     <div class="rc-checkbox-group">
                                         <label class="rc-checkbox-item">
+                                            <input type="checkbox" v-model="receivingChannelForm.isExpress">
+                                            <span>快递</span>
+                                        </label>
+                                        <label class="rc-checkbox-item">
                                             <input type="checkbox" v-model="receivingChannelForm.mustUploadPod">
                                             <span>订单签收必须上传POD</span>
                                         </label>
@@ -1663,39 +1714,7 @@
                                         </select>
                                     </div>
                                     <div class="rc-item">
-                                        <label class="rc-label">快递</label>
-                                        <div class="rc-input-wrapper"
-                                            style="display: flex; align-items: center; border: none; padding-left: 0;">
-                                            <input type="checkbox" v-model="receivingChannelForm.isExpress"
-                                                style="width: 16px; height: 16px; cursor: pointer;">
-                                        </div>
-                                    </div>
-                                    <div class="rc-item">
-                                        <label class="rc-label">国家/地区</label>
-                                        <div class="rc-multi-select" @click="toggleCountrySelect"
-                                            ref="countrySelectRef">
-                                            <div class="selected-text" v-if="receivingChannelForm.countries.length > 0">
-                                                {{ receivingChannelForm.countries.map(val =>
-                                                channelCountryOptions.find(opt => opt.value ===
-                                                val)?.label).filter(Boolean).join(', ') }}
-                                            </div>
-                                            <div class="placeholder" v-else>
-                                                请选择国家/地区
-                                            </div>
-                                            <i class="arrow"></i>
-                                            <div class="rc-multi-select-dropdown" :class="{ active: showCountrySelect }"
-                                                @click.stop>
-                                                <label class="rc-multi-option" v-for="country in channelCountryOptions"
-                                                    :key="country.value">
-                                                    <input type="checkbox" :value="country.value"
-                                                        v-model="receivingChannelForm.countries">
-                                                    <span>{{ country.label }}</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="rc-item">
-                                        <label class="rc-label required">干线级别</label>
+                                        <label class="rc-label">干线级别</label>
                                         <select class="rc-select" v-model="receivingChannelForm.mainlineLevel">
                                             <option value="">请选择</option>
                                             <option value="economy">普线Economy</option>
@@ -1890,8 +1909,7 @@
                                 <div
                                     style="display: flex; gap: 40px; padding: 0 10px; margin-top: 10px; white-space: nowrap;">
                                     <div style="flex: 1;">
-                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
-                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效选择</div>
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;">时效选择</div>
                                         <select class="rc-select" v-model="receivingChannelForm.timelinessSelection"
                                             style="width: 100%;">
                                             <option value="">请选择</option>
@@ -1900,12 +1918,10 @@
                                         </select>
                                     </div>
                                     <div style="flex: 1;">
-                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
-                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效类型</div>
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;">时效类型</div>
                                         <select class="rc-select" v-model="receivingChannelForm.timelinessType"
                                             style="width: 100%;">
                                             <option value="">请选择</option>
-                                            <option value="承诺时效">承诺时效</option>
                                             <option value="参考时效">参考时效</option>
                                         </select>
                                     </div>
@@ -1913,8 +1929,7 @@
                                 <div
                                     style="display: flex; gap: 40px; padding: 0 10px; margin-top: 16px; margin-bottom: 16px; white-space: nowrap;">
                                     <div style="flex: 1;">
-                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
-                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效单位</div>
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;">时效单位</div>
                                         <select class="rc-select" v-model="receivingChannelForm.timelinessUnit"
                                             style="width: 100%;">
                                             <option value="">请选择</option>
@@ -1924,8 +1939,7 @@
                                         </select>
                                     </div>
                                     <div style="flex: 1;">
-                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;"><span
-                                                style="color: #ff4d4f; margin-right: 4px;">*</span>时效范围</div>
+                                        <div style="margin-bottom: 8px; font-size: 13px; color: #333;">时效范围</div>
                                         <div
                                             style="display: flex; align-items: center; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; height: 32px; background: #fff;">
                                             <input type="text" v-model="receivingChannelForm.timelinessMin"
@@ -2352,8 +2366,17 @@
                                                 </td>
                                                 <td style="text-align: center;">{{ index + 1 }}</td>
                                                 <td>
-                                                    <input type="text" class="form-input" v-model="item.courier"
-                                                        placeholder="请输入" style="width: 100%;">
+                                                    <select class="form-input" v-model="item.courier"
+                                                        style="width: 100%;">
+                                                        <option value="">请选择</option>
+                                                        <option value="UPS">UPS</option>
+                                                        <option value="FedEx">FedEx</option>
+                                                        <option value="USPS">USPS</option>
+                                                        <option value="DHL">DHL</option>
+                                                        <option value="Amazon Logistics">Amazon Logistics</option>
+                                                        <option value="OnTrac">OnTrac</option>
+                                                        <option value="LaserShip">LaserShip</option>
+                                                    </select>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-input" v-model="item.code"
@@ -2616,34 +2639,63 @@
                 const statusOptions = [
                     { label: '已下单', value: 'placed' },
                     { label: '已取消', value: 'cancelled' },
+                    { label: '已受理', value: 'accepted' },
+                    { label: '已安排揽货', value: 'scheduled_pickup' },
+                    { label: '已提货', value: 'pickupgoods' },
+                    { label: '已预约入仓', value: 'booked_for_wh_entry' },
                     { label: '已拣货', value: 'picking' },
                     { label: '已订舱', value: 'booked' },
                     { label: '已放舱', value: 'letgospace' },
+                    { label: '已租箱', value: 'rented_container' },
                     { label: '已入仓(港前)', value: 'beputinstorage' },
                     { label: '已退仓', value: 'bereturnstorage' },
                     { label: '已提空柜', value: 'extractemptybox' },
+                    { label: '已收提单单证', value: 'receivedbilldocs' },
+                    { label: '已发pre alert', value: 'prealert' },
+                    { label: '已通知客户补料', value: 'informsuppfood' },
+                    { label: '已收到客户补料', value: 'receivesuppfood' },
+                    { label: '已对单', value: 'comparisonorder' },
+                    { label: 'HBL对单', value: 'hblmatchanorder' },
+                    { label: 'MBL对单', value: 'mblmatchanorder' },
+                    { label: '已确认草单', value: 'affirmreceipt' },
+                    { label: 'HBL确认草单', value: 'hblaffirmfakeorder' },
+                    { label: 'MBL确定草单', value: 'mblaffirmfakeorder' },
+                    { label: '已发送AMS', value: 'send_ams' },
+                    { label: '已发送ISF', value: 'sendisf' },
+                    { label: '已发送A/N', value: 'sendaorn' },
+                    { label: 'MBL正本已寄', value: 'mbloriginalmail' },
+                    { label: '已发送清关资料', value: 'sendclearancefile' },
+                    { label: '已发送电放', value: 'sendbilloflading' },
+                    { label: '已发送D/O', value: 'senddo' },
                     { label: '已装柜', value: 'encasement' },
+                    { label: '遗漏装柜/装板', value: 'missloadcontainer' },
                     { label: '已还重柜', value: 'restoreheavybox' },
                     { label: '已配载', value: 'shipment' },
+                    { label: '已外配', value: 'externaltransport' },
+                    { label: '已打板/打托', value: 'packed_pallet' },
                     { label: '已出仓(港前)', value: 'outofwarehouse' },
-                    { label: '已安排报关', value: 'customs_arranged' },
+                    { label: '已出口报关', value: 'customs_arranged' },
+                    { label: '已上传箱单发票', value: 'uploadlistinvoice' },
                     { label: '出口查验', value: 'exportcheck' },
                     { label: '已出口放行', value: 'export_released' },
                     { label: '已退关', value: 'export_cancelled' },
+                    { label: '已延误', value: 'delayed' },
                     { label: '已离港', value: 'departed' },
+                    { label: '已进站', value: 'in_station' },
                     { label: '已发车', value: 'dispatched' },
                     { label: '已到港', value: 'arrived' },
                     { label: '已到站', value: 'arrived_station' },
-                    { label: '已清关', value: 'clearance' },
+                    { label: '已进口清关', value: 'clearance' },
                     { label: '已进口放行', value: 'import_released' },
                     { label: '进口查验', value: 'importcheck' },
                     { label: '已提重柜', value: 'extractcontainer' },
-                    { label: '已拆柜', value: 'unpacked' },
+                    { label: '已拆柜/拆板', value: 'unpacked' },
                     { label: '已入仓(港后)', value: 'entrytransferwarehouse' },
                     { label: '已还空柜', value: 'returnedemptybox' },
                     { label: '已约交FBX仓', value: 'entrytfbxwarehouse' },
                     { label: '已出仓(港后)', value: 'outtransferwarehouse' },
-                    { label: '已派送', value: 'delivery' },
+                    { label: '已发送DS', value: 'sentdeliveryschedule' },
+                    { label: '派送中', value: 'delivery' },
                     { label: '派送异常', value: 'deliveryfail' },
                     { label: '已签收', value: 'clientsign' },
                     { label: '分批送仓', value: 'batch_delivery' },
@@ -2651,14 +2703,14 @@
 
                 const trackData = [
                     { name: '揽收', code: 'AF/NS', node: '揽收', portType: '港前' },
-                    { name: '出口报关', code: 'K1/O1', node: '报关', portType: '港前' },
+                    { name: '已出口报关', code: 'K1/O1', node: '报关', portType: '港前' },
                     { name: '出口放行', code: 'K2/O2', node: '报关', portType: '港前' },
                     { name: '已离港', code: 'VD/NS', node: '干线', portType: '港前' },
                     { name: '已离港', code: 'AL/NS', node: '干线', portType: '港前' },
                     { name: '已到港', code: 'VA/NS', node: '干线', portType: '港后' },
                     { name: '已到港', code: 'K1/AJ', node: '干线', portType: '港后' },
                     { name: '已到港', code: 'UR/NS', node: '干线', portType: '港后' },
-                    { name: '已清关', code: 'K1/RD', node: '清关', portType: '港后' },
+                    { name: '已进口清关', code: 'K1/RD', node: '清关', portType: '港后' },
                     { name: '进口放行', code: 'K2/RD', node: '清关', portType: '港后' },
                     { name: '拆柜', code: 'X4/FN', node: '海外仓', portType: '港后' },
                     { name: '已约交FBX仓', code: 'AG/AG', node: '海外仓', portType: '港后' },
@@ -2666,13 +2718,33 @@
                     { name: '分批送仓', code: '1X/NS', node: '海外仓', portType: '港后' },
                 ]
 
-                const defaultTrackNames = ['揽收', '已订舱', '已放舱', '已离港', '已到港', '已清关', '进口放行', '拆柜', '已约交FBX仓', '已签收', '分批送仓']
+                const defaultTrackNames = ['揽收', '已订舱', '已放舱', '已离港', '已到港', '已进口清关', '进口放行', '拆柜', '已约交FBX仓', '已签收', '分批送仓', '已出口报关']
 
                 const trackNameOptions = trackData
                     .filter(t => !defaultTrackNames.includes(t.name))
                     .map(t => ({ label: t.name, value: t.name }))
 
                 const createDefaultRows = (transportKey = '') => {
+                    if (transportKey === 'bill') {
+                        return [
+                            { id: idCounter++, status: 'prealert', statusCode: 'PREALERT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'informsuppfood', statusCode: 'INFORMSUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'receivesuppfood', statusCode: 'RECEIVESUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'comparisonorder', statusCode: 'COMPARISONORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'hblmatchanorder', statusCode: 'HBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'mblmatchanorder', statusCode: 'MBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'affirmreceipt', statusCode: 'AFFIRMRECEIPT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'hblaffirmfakeorder', statusCode: 'HBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'mblaffirmfakeorder', statusCode: 'MBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'send_ams', statusCode: 'SEND_AMS', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'sendisf', statusCode: 'SENDISF', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'sendaorn', statusCode: 'SENDAORN', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'mbloriginalmail', statusCode: 'MBLORIGINALMAIL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'sendclearancefile', statusCode: 'SENDCLEARANCEFILE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'sendbilloflading', statusCode: 'SENDBILLOFLADING', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'senddo', statusCode: 'SENDDO', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true }
+                        ]
+                    }
                     const rows = [{
                         id: idCounter++,
                         status: 'placed',
@@ -2699,10 +2771,23 @@
                         enabled: true,
                         pushEnabled: false,
                         isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'accepted',
+                        statusCode: 'ACCEPTEDORDER',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
                     }]
 
-                    // 海运(ocean-fcl, ocean-lcl)、空运(air-lcl)以及铁运(rail-fcl, rail-lcl)需额外带有已订舱、已放舱
-                    if (transportKey.startsWith('ocean') || transportKey.startsWith('air') || transportKey.startsWith('rail')) {
+                    // 海运整柜(ocean-fcl)、铁运整柜(rail-fcl)需额外带有已订舱、已放舱（散货不需要）
+                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
                         rows.push({
                             id: idCounter++,
                             status: 'booked',
@@ -2720,6 +2805,24 @@
                             id: idCounter++,
                             status: 'letgospace',
                             statusCode: 'LETGOSPACE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 铁运整柜(rail-fcl)在已放舱之后追加已租箱
+                    if (transportKey === 'rail-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'rented_container',
+                            statusCode: 'RENTED_CONTAINER',
                             customTrackName: '',
                             customTrackNameEn: '',
                             trackName: '',
@@ -2762,6 +2865,19 @@
                             isFixed: true
                         }, {
                             id: idCounter++,
+                            status: 'missloadcontainer',
+                            statusCode: 'MISSLOADCONTAINER',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
                             status: 'restoreheavybox',
                             statusCode: 'RESTOREHEAVYBOX',
                             customTrackName: '',
@@ -2779,6 +2895,45 @@
                     // 散货(所有 -lcl 结尾的选项) 需额外带有已入仓(港前)、已退仓、已拣货等
                     if (transportKey.endsWith('lcl')) {
                         rows.push({
+                            id: idCounter++,
+                            status: 'scheduled_pickup',
+                            statusCode: 'SCHEDULED_PICKUP',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'pickupgoods',
+                            statusCode: 'PICKUPGOODS',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'booked_for_wh_entry',
+                            statusCode: 'BOOKED_FOR_WH_ENTRY',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
                             id: idCounter++,
                             status: 'beputinstorage',
                             statusCode: 'BEPUTINSTORAGE',
@@ -2832,6 +2987,38 @@
                             isFixed: true
                         }, {
                             id: idCounter++,
+                            status: 'externaltransport',
+                            statusCode: 'EXTERNALTRANSPORT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+
+                        if (transportKey === 'air-lcl') {
+                            rows.push({
+                                id: idCounter++,
+                                status: 'packed_pallet',
+                                statusCode: 'PACKED_PALLET',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '揽收',
+                                portType: '港前',
+                                enabled: true,
+                                pushEnabled: false,
+                                isFixed: true
+                            })
+                        }
+
+                        rows.push({
+                            id: idCounter++,
                             status: 'outofwarehouse',
                             statusCode: 'OUTOFWAREHOUSE',
                             customTrackName: '',
@@ -2843,24 +3030,57 @@
                             enabled: true,
                             pushEnabled: false,
                             isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'missloadcontainer',
+                            statusCode: 'MISSLOADCONTAINER',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
                         })
                     }
 
-                    // 最后所有分类共享的通用尾部节点
+                    // 散货(LCL)模式下，已出口报关之前追加已上传箱单发票
+                    if (transportKey.endsWith('-lcl')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'uploadlistinvoice',
+                            statusCode: 'UPLOADLISTINVOICE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '报关',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 所有分类共享的通用尾部节点
                     rows.push({
                         id: idCounter++,
                         status: 'customs_arranged',
                         statusCode: 'CLEARANCEOFGOODS',
                         customTrackName: '',
                         customTrackNameEn: '',
-                        trackName: '出口报关',
+                        trackName: '已出口报关',
                         trackCode: 'K1/O1',
                         node: '报关',
                         portType: '港前',
                         enabled: true,
                         pushEnabled: false,
                         isFixed: true
-                    }, {
+                    })
+
+                    rows.push({
                         id: idCounter++,
                         status: 'exportcheck',
                         statusCode: 'EXPORTCHECK',
@@ -2899,6 +3119,19 @@
                         enabled: true,
                         pushEnabled: false,
                         isFixed: true
+                    }, {
+                        id: idCounter++,
+                        status: 'delayed',
+                        statusCode: 'DELAYED',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '干线',
+                        portType: '港前',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
                     })                    // 海运、空运最终环节追加已离港
                     if (transportKey.startsWith('ocean') || transportKey.startsWith('air')) {
                         rows.push({
@@ -2917,9 +3150,22 @@
                         })
                     }
 
-                    // 铁运、陆运最终环节追加已发车
+                    // 铁运、陆运最终环节追加已进站、已发车
                     if (transportKey.startsWith('rail') || transportKey.startsWith('land')) {
                         rows.push({
+                            id: idCounter++,
+                            status: 'in_station',
+                            statusCode: 'IN_STATION',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
                             id: idCounter++,
                             status: 'dispatched',
                             statusCode: 'OFFTHEHARBOUR',
@@ -2996,7 +3242,7 @@
                         statusCode: 'CLEARANCE',
                         customTrackName: '',
                         customTrackNameEn: '',
-                        trackName: '已清关',
+                        trackName: '已进口清关',
                         trackCode: 'K1/RD',
                         node: '清关',
                         portType: '港后',
@@ -3125,6 +3371,19 @@
                         isFixed: true
                     }, {
                         id: idCounter++,
+                        status: 'sentdeliveryschedule',
+                        statusCode: 'SENTDELIVERYSCHEDULE',
+                        customTrackName: '',
+                        customTrackNameEn: '',
+                        trackName: '',
+                        trackCode: '',
+                        node: '派送',
+                        portType: '港后',
+                        enabled: true,
+                        pushEnabled: false,
+                        isFixed: true
+                    }, {
+                        id: idCounter++,
                         status: 'delivery',
                         statusCode: 'DELIVERY',
                         customTrackName: '',
@@ -3174,11 +3433,13 @@
                     'rail-fcl': createDefaultRows('rail-fcl'),
                     'rail-lcl': createDefaultRows('rail-lcl'),
                     'land-fcl': createDefaultRows('land-fcl'),
-                    'land-lcl': createDefaultRows('land-lcl')
+                    'land-lcl': createDefaultRows('land-lcl'),
+                    'bill': createDefaultRows('bill')
                 })
 
                 const activeKey = computed(() => {
                     if (currentTransport.value === 'air') return 'air-lcl'
+                    if (currentTransport.value === 'bill') return 'bill'
                     return `${currentTransport.value}-${currentType.value}`
                 })
 
@@ -3252,26 +3513,45 @@
                                     allConfigItems[key].length = 0
 
                                     const savedRows = data[key]
-                                    const sysFixedRows = createDefaultRows(key).filter(r => r.isFixed)
+                                    const sysRows = createDefaultRows(key)
+                                    const merged = []
 
-                                    // 以用户保存的顺序为准进行加载，并同步处理系统固定行的合并与界面状态补全
-                                    const merged = savedRows.map(savedRow => {
-                                        const sysMatch = sysFixedRows.find(s => s.statusCode === savedRow.statusCode)
-                                        if (sysMatch && (savedRow.isFixed || sysMatch.isFixed)) {
-                                            return {
-                                                ...sysMatch,
-                                                ...savedRow,
-                                                isFixed: true,
+                                    // 以系统最新的预设顺序为基准进行加载
+                                    sysRows.forEach(sysRow => {
+                                        const savedRow = savedRows.find(s => s.statusCode === sysRow.statusCode)
+                                        if (savedRow) {
+                                            // 匹配到已保存数据，保留用户的开关、自定义轨迹名等状态
+                                            merged.push({
+                                                ...sysRow,
+                                                customTrackName: savedRow.customTrackName,
+                                                customTrackNameEn: savedRow.customTrackNameEn,
+                                                trackName: savedRow.trackName,
+                                                trackCode: savedRow.trackCode,
+                                                node: savedRow.node,
+                                                portType: savedRow.portType,
+                                                enabled: savedRow.enabled !== undefined ? savedRow.enabled : sysRow.enabled,
+                                                pushEnabled: savedRow.pushEnabled !== undefined ? savedRow.pushEnabled : sysRow.pushEnabled,
+                                                isFixed: true, // 只要是系统默认带出的，都视为固定行
                                                 isSaved: true
-                                            }
+                                            })
+                                        } else {
+                                            // 系统新增节点，直接使用预设值
+                                            merged.push({ ...sysRow, isSaved: true })
                                         }
-                                        return { ...savedRow, isSaved: true }
                                     })
 
-                                    // 如果系统版本更新增加了新的固定行，则追加到末尾
-                                    sysFixedRows.forEach(sysRow => {
-                                        if (!merged.find(m => m.statusCode === sysRow.statusCode)) {
-                                            merged.push({ ...sysRow, isSaved: true })
+                                    // 处理用户之前可能手动添加但不在当前模式系统默认列表中的自定义节点
+                                    // 注意：如果某个 statusCode 属于其他模式的系统节点（但不属于当前模式），不应保留
+                                    const allSysStatusCodes = new Set()
+                                    Object.keys(allConfigItems).forEach(k => {
+                                        createDefaultRows(k).forEach(r => allSysStatusCodes.add(r.statusCode))
+                                    })
+                                    savedRows.forEach(savedRow => {
+                                        if (!sysRows.find(s => s.statusCode === savedRow.statusCode)) {
+                                            // 只保留真正的用户自定义节点，排除已知系统节点
+                                            if (!allSysStatusCodes.has(savedRow.statusCode)) {
+                                                merged.push({ ...savedRow, isSaved: true })
+                                            }
                                         }
                                     })
 
@@ -3322,9 +3602,13 @@
                 }
 
                 const resetConfig = () => {
-                    allConfigItems[activeKey.value] = createDefaultRows(activeKey.value)
-                    localStorage.setItem('track-config-all', JSON.stringify(allConfigItems))
-                    showToast('当前分类配置已重置')
+                    if (confirm('确定要将所有运输方式恢复为系统初始状态吗？此操作将丢失您所有的自定义修改。')) {
+                        Object.keys(allConfigItems).forEach(key => {
+                            allConfigItems[key] = createDefaultRows(key)
+                        })
+                        localStorage.setItem('track-config-all', JSON.stringify(allConfigItems))
+                        showToast('全部配置已成功恢复系统初始状态')
+                    }
                 }
 
                 // ========== 添加轨迹节点 ==========
@@ -3693,6 +3977,8 @@
                     trackCode: '',
                     trackName: '',
                     trackNameEn: '',
+                    showOnClient: false,
+                    pushToGroup: false,
                     creator: '-',
                     createTime: '-',
                     modifier: '-',
@@ -3846,7 +4132,7 @@
                     departureReminderDays: '',
                     unloadingReminderDays: '',
                     timelinessSelection: '',
-                    timelinessType: '',
+                    timelinessType: '参考时效',
                     timelinessUnit: '',
                     timelinessMin: '',
                     timelinessMax: ''
@@ -3866,11 +4152,7 @@
                 const saveReceivingChannel = () => {
                     if (!receivingChannelForm.code) { showToast('请输入代码', true); return }
                     if (!receivingChannelForm.name) { showToast('请输入渠道名称', true); return }
-                    if (!receivingChannelForm.timelinessSelection) { showToast('请选择时效选择', true); return }
-                    if (!receivingChannelForm.timelinessType) { showToast('请选择时效类型', true); return }
-                    if (!receivingChannelForm.timelinessUnit) { showToast('请选择时效单位', true); return }
-                    if (!receivingChannelForm.timelinessMin || !receivingChannelForm.timelinessMax) { showToast('请输入完整的时效范围', true); return }
-                    if (parseFloat(receivingChannelForm.timelinessMin) > parseFloat(receivingChannelForm.timelinessMax)) { showToast('最长时效需大于等于最短时效', true); return }
+                    if (receivingChannelForm.timelinessMin && receivingChannelForm.timelinessMax && parseFloat(receivingChannelForm.timelinessMin) > parseFloat(receivingChannelForm.timelinessMax)) { showToast('最长时效需大于等于最短时效', true); return }
 
                     showToast('✓ 保存成功')
                 }
