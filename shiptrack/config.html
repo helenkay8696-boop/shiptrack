@@ -1417,13 +1417,16 @@
                                 @click="currentTransport = 'land'">陆运</div>
                             <div class="transport-tab" :class="{ active: currentTransport === 'bill' }"
                                 @click="currentTransport = 'bill'">单证</div>
+                            <div class="transport-tab" :class="{ active: currentTransport === 'finance' }"
+                                @click="currentTransport = 'finance'">财务</div>
                         </div>
 
                         <!-- 右侧表格区 -->
                         <div class="config-content">
                             <div class="header">
                                 <!-- 新增：整柜/散货 选项卡, 从下方移到原标题位置 -->
-                                <div class="type-tabs" v-if="currentTransport !== 'bill'">
+                                <div class="type-tabs"
+                                    v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
                                     <span class="type-tab left-tab" v-if="currentTransport !== 'air'"
                                         :class="{ active: currentType === 'fcl' }" @click="currentType = 'fcl'">{{
                                         currentTransport === 'land' ? '整车' : '整柜' }}</span>
@@ -1446,7 +1449,8 @@
                                         <th>状态编码</th>
                                         <th>轨迹名称</th>
                                         <th>轨迹名称(英)</th>
-                                        <th v-if="currentTransport !== 'bill'">轨迹编码(亚马逊)</th>
+                                        <th v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
+                                            轨迹编码(亚马逊)</th>
                                         <th>节点</th>
                                         <th>港前/港后</th>
                                         <th>是否启用</th>
@@ -1483,7 +1487,7 @@
                                             </select>
                                         </td>
                                         <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
-                                        <td v-if="currentTransport !== 'bill'">
+                                        <td v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
                                             <template v-if="item.isFixed || item.isSaved">
                                                 <span class="auto-text">{{ item.trackName ?
                                                     `${item.trackName}/${item.trackCode || '-'}` : '-' }}</span>
@@ -2687,6 +2691,13 @@
                     { label: '已到站', value: 'arrived_station' },
                     { label: '已进口清关', value: 'clearance' },
                     { label: '已进口放行', value: 'import_released' },
+                    { label: '押单', value: 'detainreceipts' },
+                    { label: 'HBL扣货', value: 'hbldetentionofcargo' },
+                    { label: 'MBL扣货', value: 'mbldetentionofcargo' },
+                    { label: 'MBL放货', value: 'mblreleasecargo' },
+                    { label: 'HBL放货', value: 'hblreleasecargo' },
+                    { label: '已扣货', value: 'detentionofcargo' },
+                    { label: '已放货', value: 'releasecargo' },
                     { label: '进口查验', value: 'importcheck' },
                     { label: '已提重柜', value: 'extractcontainer' },
                     { label: '已拆柜/拆板', value: 'unpacked' },
@@ -2699,6 +2710,19 @@
                     { label: '派送异常', value: 'deliveryfail' },
                     { label: '已签收', value: 'clientsign' },
                     { label: '分批送仓', value: 'batch_delivery' },
+                    { label: '已费用确认', value: 'fees_confirmed' },
+                    { label: '已增减费用确认', value: 'additional_fees_confirmed' },
+                    { label: '应收对账', value: 'aractstm' },
+                    { label: '应付对账', value: 'apactstm' },
+                    { label: '已发送账单', value: 'sendbill' },
+                    { label: '完成应收', value: 'accomplishreceivable' },
+                    { label: '完成应付', value: 'accomplishcopewith' },
+                    { label: '已完成开票', value: 'accomplishmakeinvoice' },
+                    { label: '已完成收票', value: 'accompclosedinvoice' },
+                    { label: '全部收款完成', value: 'gatheringaccomplish' },
+                    { label: '全部付款申请', value: 'paymentapplyfor' },
+                    { label: '全部付款完成', value: 'paymentaccomplish' },
+                    { label: '已结转', value: 'carried_over' },
                 ]
 
                 const trackData = [
@@ -2743,6 +2767,23 @@
                             { id: idCounter++, status: 'sendclearancefile', statusCode: 'SENDCLEARANCEFILE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
                             { id: idCounter++, status: 'sendbilloflading', statusCode: 'SENDBILLOFLADING', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
                             { id: idCounter++, status: 'senddo', statusCode: 'SENDDO', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true }
+                        ]
+                    }
+                    if (transportKey === 'finance') {
+                        return [
+                            { id: idCounter++, status: 'fees_confirmed', statusCode: 'FEES_CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'additional_fees_confirmed', statusCode: 'ADDITIONAL FEES CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'aractstm', statusCode: 'ARACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'apactstm', statusCode: 'APACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'sendbill', statusCode: 'SENDBILL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'accomplishreceivable', statusCode: 'ACCOMPLISHRECEIVABLE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'accomplishcopewith', statusCode: 'ACCOMPLISHCOPEWITH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'accomplishmakeinvoice', statusCode: 'ACCOMPLISHMAKEINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'accompclosedinvoice', statusCode: 'ACCOMPCLOSEDINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'gatheringaccomplish', statusCode: 'GATHERINGACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'paymentapplyfor', statusCode: 'PAYMENTAPPLYFOR', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'paymentaccomplish', statusCode: 'PAYMENTACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
+                            { id: idCounter++, status: 'carried_over', statusCode: 'CARRIED_OVER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '财务', portType: '', enabled: true, pushEnabled: false, isFixed: true }
                         ]
                     }
                     const rows = [{
@@ -3277,6 +3318,107 @@
                         isFixed: true
                     })
 
+                    // 海运整柜(ocean-fcl)专有放货节点
+                    if (transportKey === 'ocean-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'detainreceipts',
+                            statusCode: 'DETAINRECEIPTS',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'hbldetentionofcargo',
+                            statusCode: 'HBLDETENTIONOFCARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'mbldetentionofcargo',
+                            statusCode: 'MBLDETENTIONOFCARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'mblreleasecargo',
+                            statusCode: 'MBLRELEASECARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'hblreleasecargo',
+                            statusCode: 'HBLRELEASECARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
+                    // 空运、铁运整柜、陆运整柜的放货节点
+                    if (transportKey.startsWith('air') || transportKey === 'rail-fcl' || transportKey === 'land-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'detentionofcargo',
+                            statusCode: 'DETENTIONOFCARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'releasecargo',
+                            statusCode: 'RELEASECARGO',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '放货',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: false,
+                            isFixed: true
+                        })
+                    }
+
                     // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，还需在所有的末尾（放行之后）追加最新专有节点：已提重柜
                     if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
                         rows.push({
@@ -3434,12 +3576,14 @@
                     'rail-lcl': createDefaultRows('rail-lcl'),
                     'land-fcl': createDefaultRows('land-fcl'),
                     'land-lcl': createDefaultRows('land-lcl'),
-                    'bill': createDefaultRows('bill')
+                    'bill': createDefaultRows('bill'),
+                    'finance': createDefaultRows('finance')
                 })
 
                 const activeKey = computed(() => {
                     if (currentTransport.value === 'air') return 'air-lcl'
                     if (currentTransport.value === 'bill') return 'bill'
+                    if (currentTransport.value === 'finance') return 'finance'
                     return `${currentTransport.value}-${currentType.value}`
                 })
 
