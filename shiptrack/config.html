@@ -1424,7 +1424,7 @@
                         <!-- 右侧表格区 -->
                         <div class="config-content">
                             <div class="header">
-                                <!-- 新增：整柜/散货 选项卡, 从下方移到原标题位置 -->
+                                <!-- 整柜/散货 选项卡 -->
                                 <div class="type-tabs"
                                     v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
                                     <span class="type-tab left-tab" v-if="currentTransport !== 'air'"
@@ -1434,6 +1434,30 @@
                                         :class="[ currentTransport === 'air' ? 'single-tab' : 'right-tab', { active: currentType === 'lcl' } ]"
                                         @click="currentType = 'lcl'">{{ currentTransport === 'land' ? '零担' : '散货'
                                         }}</span>
+                                </div>
+                                <!-- 单证子选项卡 -->
+                                <div class="type-tabs" v-if="currentTransport === 'bill'">
+                                    <span class="type-tab left-tab" :class="{ active: currentSubType === 'ocean' }"
+                                        @click="currentSubType = 'ocean'">海运</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'air' }"
+                                        @click="currentSubType = 'air'">空运</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'rail' }"
+                                        @click="currentSubType = 'rail'">铁运</span>
+                                    <span class="type-tab right-tab" :class="{ active: currentSubType === 'land' }"
+                                        @click="currentSubType = 'land'">陆运</span>
+                                </div>
+                                <!-- 财务子选项卡 -->
+                                <div class="type-tabs" v-if="currentTransport === 'finance'">
+                                    <span class="type-tab left-tab" :class="{ active: currentSubType === 'ocean' }"
+                                        @click="currentSubType = 'ocean'">海运</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'air' }"
+                                        @click="currentSubType = 'air'">空运</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'rail' }"
+                                        @click="currentSubType = 'rail'">铁运</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'land' }"
+                                        @click="currentSubType = 'land'">陆运</span>
+                                    <span class="type-tab right-tab" :class="{ active: currentSubType === 'purchase' }"
+                                        @click="currentSubType = 'purchase'">代采</span>
                                 </div>
                                 <div class="header-actions">
                                     <button class="btn" @click="resetConfig">重置</button>
@@ -2432,18 +2456,20 @@
                                 <span>已签收</span>
                             </label>
 
-                            <div class="dm-radio-group" style="margin-left: 20px; gap: 15px;">
-                                <span style="font-size: 12px; color: #666;">尾程派送方式:</span>
-                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
-                                        value="truck">卡派</label>
-                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
-                                        value="express">快递派</label>
-                                <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
-                                        value="amazon">亚马逊自提</label>
-                            </div>
-
                             <div style="flex: 1"></div>
                             <button class="btn btn-primary dm-copy-btn" @click="copyDeliveryInfo">复制</button>
+                        </div>
+
+                        <!-- 尾程派送方式 - 仅 FBA/FBX 时显示 -->
+                        <div v-if="deliveryModifyTab === 'FBA' || deliveryModifyTab === 'FBX'" class="dm-radio-group"
+                            style="padding: 8px 16px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
+                            <span style="font-size: 12px; color: #666;">尾程派送方式:</span>
+                            <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                    value="truck">卡派</label>
+                            <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                    value="express">快递派</label>
+                            <label class="dm-radio"><input type="radio" v-model="deliveryModifyForm.lastMileMethod"
+                                    value="amazon">亚马逊自提</label>
                         </div>
 
                         <!-- 表单内容 -->
@@ -2620,12 +2646,17 @@
                 const currentPage = ref('config')
                 const currentTransport = ref('ocean')
                 const currentType = ref('fcl')
+                const currentSubType = ref('ocean')
 
                 watch(currentTransport, (newVal) => {
                     if (newVal === 'air') {
                         currentType.value = 'lcl'
                     } else {
                         currentType.value = 'fcl'
+                    }
+                    // 切换到单证或财务时重置子选项卡
+                    if (newVal === 'bill' || newVal === 'finance') {
+                        currentSubType.value = 'ocean'
                     }
                 })
 
@@ -2672,7 +2703,6 @@
                     { label: '已发送电放', value: 'sendbilloflading' },
                     { label: '已发送D/O', value: 'senddo' },
                     { label: '已装柜', value: 'encasement' },
-                    { label: '遗漏装柜/装板', value: 'missloadcontainer' },
                     { label: '已还重柜', value: 'restoreheavybox' },
                     { label: '已配载', value: 'shipment' },
                     { label: '已外配', value: 'externaltransport' },
@@ -2749,41 +2779,41 @@
                     .map(t => ({ label: t.name, value: t.name }))
 
                 const createDefaultRows = (transportKey = '') => {
-                    if (transportKey === 'bill') {
+                    if (transportKey.startsWith('bill')) {
                         return [
-                            { id: idCounter++, status: 'prealert', statusCode: 'PREALERT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'informsuppfood', statusCode: 'INFORMSUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'receivesuppfood', statusCode: 'RECEIVESUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'comparisonorder', statusCode: 'COMPARISONORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'hblmatchanorder', statusCode: 'HBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'mblmatchanorder', statusCode: 'MBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'affirmreceipt', statusCode: 'AFFIRMRECEIPT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'hblaffirmfakeorder', statusCode: 'HBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'mblaffirmfakeorder', statusCode: 'MBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'send_ams', statusCode: 'SEND_AMS', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'sendisf', statusCode: 'SENDISF', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'sendaorn', statusCode: 'SENDAORN', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'mbloriginalmail', statusCode: 'MBLORIGINALMAIL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'sendclearancefile', statusCode: 'SENDCLEARANCEFILE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'sendbilloflading', statusCode: 'SENDBILLOFLADING', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'senddo', statusCode: 'SENDDO', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: false, isFixed: true }
+                            { id: idCounter++, status: 'prealert', statusCode: 'PREALERT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'informsuppfood', statusCode: 'INFORMSUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'receivesuppfood', statusCode: 'RECEIVESUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'comparisonorder', statusCode: 'COMPARISONORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'hblmatchanorder', statusCode: 'HBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'mblmatchanorder', statusCode: 'MBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'affirmreceipt', statusCode: 'AFFIRMRECEIPT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'hblaffirmfakeorder', statusCode: 'HBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'mblaffirmfakeorder', statusCode: 'MBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'send_ams', statusCode: 'SEND_AMS', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'sendisf', statusCode: 'SENDISF', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'sendaorn', statusCode: 'SENDAORN', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'mbloriginalmail', statusCode: 'MBLORIGINALMAIL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'sendclearancefile', statusCode: 'SENDCLEARANCEFILE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'sendbilloflading', statusCode: 'SENDBILLOFLADING', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'senddo', statusCode: 'SENDDO', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true }
                         ]
                     }
-                    if (transportKey === 'finance') {
+                    if (transportKey.startsWith('finance')) {
                         return [
-                            { id: idCounter++, status: 'fees_confirmed', statusCode: 'FEES_CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'additional_fees_confirmed', statusCode: 'ADDITIONAL FEES CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'aractstm', statusCode: 'ARACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'apactstm', statusCode: 'APACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'sendbill', statusCode: 'SENDBILL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'accomplishreceivable', statusCode: 'ACCOMPLISHRECEIVABLE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'accomplishcopewith', statusCode: 'ACCOMPLISHCOPEWITH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'accomplishmakeinvoice', statusCode: 'ACCOMPLISHMAKEINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'accompclosedinvoice', statusCode: 'ACCOMPCLOSEDINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'gatheringaccomplish', statusCode: 'GATHERINGACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'paymentapplyfor', statusCode: 'PAYMENTAPPLYFOR', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'paymentaccomplish', statusCode: 'PAYMENTACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: false, isFixed: true },
-                            { id: idCounter++, status: 'carried_over', statusCode: 'CARRIED_OVER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '财务', portType: '', enabled: true, pushEnabled: false, isFixed: true }
+                            { id: idCounter++, status: 'fees_confirmed', statusCode: 'FEES_CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'additional_fees_confirmed', statusCode: 'ADDITIONAL FEES CONFIRMED', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'aractstm', statusCode: 'ARACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'apactstm', statusCode: 'APACTSTM', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'sendbill', statusCode: 'SENDBILL', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '账单', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'accomplishreceivable', statusCode: 'ACCOMPLISHRECEIVABLE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'accomplishcopewith', statusCode: 'ACCOMPLISHCOPEWITH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '费用', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'accomplishmakeinvoice', statusCode: 'ACCOMPLISHMAKEINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'accompclosedinvoice', statusCode: 'ACCOMPCLOSEDINVOICE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '发票', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'gatheringaccomplish', statusCode: 'GATHERINGACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'paymentapplyfor', statusCode: 'PAYMENTAPPLYFOR', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'paymentaccomplish', statusCode: 'PAYMENTACCOMPLISH', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '收付款', portType: '', enabled: true, pushEnabled: true, isFixed: true },
+                            { id: idCounter++, status: 'carried_over', statusCode: 'CARRIED_OVER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '财务', portType: '', enabled: true, pushEnabled: true, isFixed: true }
                         ]
                     }
                     const rows = [{
@@ -2797,7 +2827,7 @@
                         node: '',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -2810,7 +2840,7 @@
                         node: '',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -2823,7 +2853,7 @@
                         node: '',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }]
 
@@ -2840,7 +2870,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2853,7 +2883,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -2871,7 +2901,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -2889,7 +2919,7 @@
                             node: '拖车',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2902,20 +2932,7 @@
                             node: '拖车',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
-                            isFixed: true
-                        }, {
-                            id: idCounter++,
-                            status: 'missloadcontainer',
-                            statusCode: 'MISSLOADCONTAINER',
-                            customTrackName: '',
-                            customTrackNameEn: '',
-                            trackName: '',
-                            trackCode: '',
-                            node: '拖车',
-                            portType: '港前',
-                            enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2928,7 +2945,7 @@
                             node: '拖车',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -2946,7 +2963,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2959,7 +2976,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2972,7 +2989,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2985,7 +3002,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -2998,7 +3015,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3011,7 +3028,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3024,7 +3041,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3037,7 +3054,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
 
@@ -3053,7 +3070,7 @@
                                 node: '揽收',
                                 portType: '港前',
                                 enabled: true,
-                                pushEnabled: false,
+                                pushEnabled: true,
                                 isFixed: true
                             })
                         }
@@ -3069,20 +3086,7 @@
                             node: '揽收',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
-                            isFixed: true
-                        }, {
-                            id: idCounter++,
-                            status: 'missloadcontainer',
-                            statusCode: 'MISSLOADCONTAINER',
-                            customTrackName: '',
-                            customTrackNameEn: '',
-                            trackName: '',
-                            trackCode: '',
-                            node: '拖车',
-                            portType: '港前',
-                            enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3100,7 +3104,7 @@
                             node: '报关',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3117,7 +3121,7 @@
                         node: '报关',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     })
 
@@ -3132,7 +3136,7 @@
                         node: '报关',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3145,7 +3149,7 @@
                         node: '报关',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3158,7 +3162,7 @@
                         node: '报关',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3171,7 +3175,7 @@
                         node: '干线',
                         portType: '港前',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     })                    // 海运、空运最终环节追加已离港
                     if (transportKey.startsWith('ocean') || transportKey.startsWith('air')) {
@@ -3186,7 +3190,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3204,7 +3208,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3217,7 +3221,7 @@
                             node: '干线',
                             portType: '港前',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3235,7 +3239,7 @@
                             node: '干线',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3253,7 +3257,7 @@
                             node: '干线',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3271,7 +3275,7 @@
                             node: '干线',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3288,7 +3292,7 @@
                         node: '清关',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3301,7 +3305,7 @@
                         node: '清关',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3314,7 +3318,7 @@
                         node: '清关',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     })
 
@@ -3331,7 +3335,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3344,7 +3348,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3357,7 +3361,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3370,7 +3374,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3383,7 +3387,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3401,7 +3405,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         }, {
                             id: idCounter++,
@@ -3414,7 +3418,7 @@
                             node: '放货',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3432,7 +3436,7 @@
                             node: '拖车',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3449,7 +3453,7 @@
                         node: '海外仓',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3462,7 +3466,7 @@
                         node: '海外仓',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     })
 
@@ -3479,7 +3483,7 @@
                             node: '拖车',
                             portType: '港后',
                             enabled: true,
-                            pushEnabled: false,
+                            pushEnabled: true,
                             isFixed: true
                         })
                     }
@@ -3496,7 +3500,7 @@
                         node: '海外仓',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3509,7 +3513,7 @@
                         node: '海外仓',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3522,7 +3526,7 @@
                         node: '派送',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3535,7 +3539,7 @@
                         node: '派送',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3548,7 +3552,7 @@
                         node: '派送',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     }, {
                         id: idCounter++,
@@ -3561,7 +3565,7 @@
                         node: '',
                         portType: '港后',
                         enabled: true,
-                        pushEnabled: false,
+                        pushEnabled: true,
                         isFixed: true
                     })
 
@@ -3576,14 +3580,21 @@
                     'rail-lcl': createDefaultRows('rail-lcl'),
                     'land-fcl': createDefaultRows('land-fcl'),
                     'land-lcl': createDefaultRows('land-lcl'),
-                    'bill': createDefaultRows('bill'),
-                    'finance': createDefaultRows('finance')
+                    'bill-ocean': createDefaultRows('bill-ocean'),
+                    'bill-air': createDefaultRows('bill-air'),
+                    'bill-rail': createDefaultRows('bill-rail'),
+                    'bill-land': createDefaultRows('bill-land'),
+                    'finance-ocean': createDefaultRows('finance-ocean'),
+                    'finance-air': createDefaultRows('finance-air'),
+                    'finance-rail': createDefaultRows('finance-rail'),
+                    'finance-land': createDefaultRows('finance-land'),
+                    'finance-purchase': createDefaultRows('finance-purchase')
                 })
 
                 const activeKey = computed(() => {
                     if (currentTransport.value === 'air') return 'air-lcl'
-                    if (currentTransport.value === 'bill') return 'bill'
-                    if (currentTransport.value === 'finance') return 'finance'
+                    if (currentTransport.value === 'bill') return `bill-${currentSubType.value}`
+                    if (currentTransport.value === 'finance') return `finance-${currentSubType.value}`
                     return `${currentTransport.value}-${currentType.value}`
                 })
 
@@ -3674,7 +3685,7 @@
                                                 node: savedRow.node,
                                                 portType: savedRow.portType,
                                                 enabled: savedRow.enabled !== undefined ? savedRow.enabled : sysRow.enabled,
-                                                pushEnabled: savedRow.pushEnabled !== undefined ? savedRow.pushEnabled : sysRow.pushEnabled,
+                                                pushEnabled: sysRow.pushEnabled, // 强制要求使用系统目前最新的全开默认配置
                                                 isFixed: true, // 只要是系统默认带出的，都视为固定行
                                                 isSaved: true
                                             })
@@ -3751,6 +3762,7 @@
                             allConfigItems[key] = createDefaultRows(key)
                         })
                         localStorage.setItem('track-config-all', JSON.stringify(allConfigItems))
+                        loadConfig() // 重新用纯净缓存刷新页面数据
                         showToast('全部配置已成功恢复系统初始状态')
                     }
                 }
@@ -4302,7 +4314,7 @@
                 }
 
                 return {
-                    currentPage, currentTransport, currentType,
+                    currentPage, currentTransport, currentType, currentSubType,
                     configItems, statusOptions, trackNameOptions, toast,
                     saveConfig, resetConfig, addRow, deleteRow,
                     isDefaultTrack, getAvailableStatusOptions, onStatusChange, onTrackNameChange, onEnabledChange,
