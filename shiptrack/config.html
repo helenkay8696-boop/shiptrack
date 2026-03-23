@@ -2831,6 +2831,7 @@
                     { label: '已租箱', value: 'rented_container' },
                     { label: '已入仓(港前)', value: 'beputinstorage' },
                     { label: '已退仓', value: 'bereturnstorage' },
+                    { label: '遗漏装柜/装板', value: 'missedstowage' },
                     { label: '已派车', value: 'sendacar' },
                     { label: '已提空柜', value: 'extractemptybox' },
                     { label: '已收提单单证', value: 'receivedbilldocs' },
@@ -3005,8 +3006,8 @@
                         isFixed: true
                     }]
 
-                    // 海运整柜(ocean-fcl)、铁运整柜(rail-fcl)需额外带有已订舱、已放舱（散货不需要）
-                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
+                    // 海运整柜(ocean-fcl)、铁运整柜(rail-fcl)、空运散货(air-lcl)需额外带有已订舱、已放舱（其他散货不需要）
+                    if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl' || transportKey === 'air-lcl') {
                         rows.push({
                             id: idCounter++,
                             status: 'booked',
@@ -3240,6 +3241,19 @@
                             id: idCounter++,
                             status: 'outofwarehouse',
                             statusCode: 'OUTOFWAREHOUSE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'missedstowage',
+                            statusCode: 'MISSEDSTOWAGE',
                             customTrackName: '',
                             customTrackNameEn: '',
                             trackName: '',
