@@ -551,6 +551,67 @@
             padding: 20px;
         }
 
+        .modal-dialog {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-form-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .modal-form-label {
+            width: 70px;
+            min-width: 70px;
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .modal-form-input {
+            flex: 1;
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            height: 28px;
+            box-sizing: border-box;
+        }
+
+        .modal-form-input:focus {
+            border-color: #1890ff;
+        }
+
+        .platform-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 10px;
+            min-width: 16px;
+            height: 16px;
+            line-height: 16px;
+            border-radius: 8px;
+            text-align: center;
+            padding: 0 4px;
+            font-weight: 600;
+        }
+
         .template-form {
             display: flex;
             flex-direction: column;
@@ -1359,26 +1420,28 @@
                         <span class="icon">🎯</span>
                         <span>自定义轨迹</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'add' }" @click="currentPage = 'add'">
+                    <div class="menu-item" :class="{ active: currentPage === 'add' }" @click="currentPage = 'add'"
+                        style="display:none">
                         <span class="icon">📍</span>
                         <span>推送轨迹节点</span>
                     </div>
-                    <div class="menu-item" :class="{ active: currentPage === 'demo' }" @click="currentPage = 'demo'">
+                    <div class="menu-item" :class="{ active: currentPage === 'demo' }" @click="currentPage = 'demo'"
+                        style="display:none">
                         <span class="icon">🚀</span>
                         <span>揽收推送字段</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'departure' }"
-                        @click="currentPage = 'departure'">
+                        @click="currentPage = 'departure'" style="display:none">
                         <span class="icon">🚢</span>
                         <span>离港推送字段</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'delivery' }"
-                        @click="currentPage = 'delivery'">
+                        @click="currentPage = 'delivery'" style="display:none">
                         <span class="icon">🚚</span>
                         <span>派送推送字段</span>
                     </div>
                     <div class="menu-item" :class="{ active: currentPage === 'booking' }"
-                        @click="currentPage = 'booking'">
+                        @click="currentPage = 'booking'" style="display:none">
                         <span class="icon">📦</span>
                         <span>约仓推送字段</span>
                     </div>
@@ -1473,12 +1536,15 @@
                                         <th>状态编码</th>
                                         <th>轨迹名称</th>
                                         <th>轨迹名称(英)</th>
-                                        <th v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
+                                        <th v-if="currentTransport !== 'bill' && currentTransport !== 'finance'"
+                                            style="display:none">
                                             轨迹编码(亚马逊)</th>
                                         <th>节点</th>
                                         <th>港前/港后</th>
                                         <th>是否启用</th>
                                         <th>是否路由</th>
+                                        <th v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">平台配置
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1511,7 +1577,8 @@
                                             </select>
                                         </td>
                                         <td><span class="auto-text">{{ item.customTrackNameEn || '-' }}</span></td>
-                                        <td v-if="currentTransport !== 'bill' && currentTransport !== 'finance'">
+                                        <td v-if="currentTransport !== 'bill' && currentTransport !== 'finance'"
+                                            style="display:none">
                                             <template v-if="item.isFixed || item.isSaved">
                                                 <span class="auto-text">{{ item.trackName ?
                                                     `${item.trackName}/${item.trackCode || '-'}` : '-' }}</span>
@@ -1562,9 +1629,64 @@
                                                 <span class="slider"></span>
                                             </label>
                                         </td>
+                                        <td v-if="currentTransport !== 'bill' && currentTransport !== 'finance'"
+                                            style="text-align:center;">
+                                            <div style="position:relative;display:inline-block;">
+                                                <button class="btn" style="padding:2px 10px;font-size:11px;"
+                                                    @click="openPlatformConfig(item)">配置</button>
+                                                <span v-if="item.platforms && item.platforms.length"
+                                                    class="platform-badge">{{ item.platforms.length }}</span>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- 平台配置弹窗 -->
+                    <div v-if="platformConfigVisible" class="modal-overlay" @click.self="closePlatformConfig">
+                        <div class="modal-dialog" style="width: 600px;">
+                            <div class="modal-header">
+                                <span class="modal-title">配置轨迹编码及开关: {{ platformConfigItem?.status ?
+                                    (statusOptions.find(o => o.value === platformConfigItem.status)?.label ||
+                                    platformConfigItem.status) : '' }}</span>
+                                <button class="modal-close" @click="closePlatformConfig">&times;</button>
+                            </div>
+                            <div class="modal-body" style="padding:12px 16px;">
+                                <div v-if="platformConfigList.length === 0"
+                                    style="padding:20px;text-align:center;color:#999;">
+                                    暂无平台配置数据
+                                </div>
+                                <table v-else class="config-table" style="width:100%;font-size:12px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding:6px 8px;">平台名称</th>
+                                            <th style="padding:6px 8px;">轨迹编码</th>
+                                            <th style="padding:6px 8px;text-align:center;">启用</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(p, pi) in platformConfigList" :key="pi">
+                                            <td style="padding:4px 8px;font-size:12px;">{{ p.name }}</td>
+                                            <td style="padding:4px 8px;font-size:12px;">{{ p.code }}</td>
+                                            <td style="padding:4px 6px;text-align:center;">
+                                                <label class="switch" style="transform:scale(0.8);">
+                                                    <input type="checkbox" v-model="p.enabled">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div
+                                style="display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid #eee;">
+                                <button class="btn" style="padding:4px 16px;font-size:12px;"
+                                    @click="closePlatformConfig">取消</button>
+                                <button class="btn btn-primary" style="padding:4px 16px;font-size:12px;"
+                                    @click="savePlatformConfig">保存</button>
+                            </div>
                         </div>
                     </div>
 
@@ -2320,113 +2442,138 @@
                         </div>
                     </div>
 
-                    <!-- 新增仓库弹窗页面 -->
-                    <div v-if="currentPage === 'addWarehouse'">
-                        <div class="header">
-                            <h1>新增</h1>
-                            <div class="header-actions">
-                                <button class="btn btn-primary" @click="submitWarehouse">确定</button>
+                    <!-- 新增仓库弹窗 -->
+                    <div v-if="currentPage === 'addWarehouse'" class="modal-overlay"
+                        @click.self="currentPage = 'config'">
+                        <div class="modal-dialog" style="width: 680px;">
+                            <div class="modal-header">
+                                <span class="modal-title">新增</span>
                             </div>
-                        </div>
-                        <div class="form-content">
-                            <div class="form-item">
-                                <label class="form-label">仓库代码<span class="required">*</span></label>
-                                <input type="text" class="form-input" v-model="warehouseForm.warehouseCode"
-                                    placeholder="请输入">
-                            </div>
-                            <div class="form-item">
-                                <label class="form-label">国家<span class="required">*</span></label>
-                                <select class="form-input" v-model="warehouseForm.country">
-                                    <option value="">请选择</option>
-                                    <option v-for="c in countryOptions" :key="c.value" :value="c.value">{{ c.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-item half">
-                                    <label class="form-label">省/州<span class="required">*</span></label>
-                                    <input type="text" class="form-input" v-model="warehouseForm.province"
+                            <div class="modal-body" style="padding:12px 20px;">
+                                <!-- 仓库代码 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">仓库代码<span class="required">*</span></label>
+                                    <input type="text" class="modal-form-input" v-model="warehouseForm.warehouseCode"
                                         placeholder="请输入">
                                 </div>
-                                <div class="form-item half">
-                                    <label class="form-label">城市<span class="required">*</span></label>
-                                    <input type="text" class="form-input" v-model="warehouseForm.city"
+                                <!-- 平台 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">平台<span class="required">*</span></label>
+                                    <select class="modal-form-input" v-model="warehouseForm.platform">
+                                        <option value="">请选择</option>
+                                        <option value="amazon">Amazon</option>
+                                        <option value="walmart">Walmart</option>
+                                        <option value="temu">Temu</option>
+                                        <option value="shein">Shein</option>
+                                        <option value="tiktok">TikTok</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                                <!-- 国家 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">国家<span class="required">*</span></label>
+                                    <select class="modal-form-input" v-model="warehouseForm.country">
+                                        <option value="">请选择</option>
+                                        <option v-for="c in countryOptions" :key="c.value" :value="c.value">{{ c.label
+                                            }}</option>
+                                    </select>
+                                </div>
+                                <!-- 省/州 + 城市 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">省/州<span class="required">*</span></label>
+                                    <input type="text" class="modal-form-input" style="flex:1"
+                                        v-model="warehouseForm.province" placeholder="请输入">
+                                    <label style="font-size:12px;color:#666;margin:0 8px;white-space:nowrap;">城市<span
+                                            class="required">*</span></label>
+                                    <input type="text" class="modal-form-input" style="flex:1"
+                                        v-model="warehouseForm.city" placeholder="请输入">
+                                </div>
+                                <!-- 地址 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">地址<span class="required">*</span></label>
+                                    <input type="text" class="modal-form-input" v-model="warehouseForm.address"
                                         placeholder="请输入">
                                 </div>
-                            </div>
-                            <div class="form-item">
-                                <label class="form-label">地址<span class="required">*</span></label>
-                                <input type="text" class="form-input" v-model="warehouseForm.address" placeholder="请输入">
-                            </div>
-
-                            <!-- 邮编表格 -->
-                            <div class="form-item" style="align-items: flex-start;">
-                                <label class="form-label">邮编<span class="required">*</span></label>
-                                <div style="flex: 1;">
-                                    <table class="config-table" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th class="action-cell">+</th>
-                                                <th style="text-align: center;">#</th>
-                                                <th style="text-align: center;">快递公司</th>
-                                                <th style="text-align: center;">邮编</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(item, index) in postalCodes" :key="index">
-                                                <td class="action-cell">
-                                                    <button class="btn-icon btn-add" @click="addPostalCode" title="新增行">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <line x1="12" y1="8" x2="12" y2="16" />
-                                                            <line x1="8" y1="12" x2="16" y2="12" />
-                                                        </svg>
-                                                    </button>
-                                                    <button class="btn-icon btn-delete" @click="removePostalCode(index)"
-                                                        title="删除">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                            stroke-width="2">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <line x1="8" y1="12" x2="16" y2="12" />
-                                                        </svg>
-                                                    </button>
-                                                </td>
-                                                <td style="text-align: center;">{{ index + 1 }}</td>
-                                                <td>
-                                                    <select class="form-input" v-model="item.courier"
-                                                        style="width: 100%;">
-                                                        <option value="">请选择</option>
-                                                        <option value="UPS">UPS</option>
-                                                        <option value="FedEx">FedEx</option>
-                                                        <option value="USPS">USPS</option>
-                                                        <option value="DHL">DHL</option>
-                                                        <option value="Amazon Logistics">Amazon Logistics</option>
-                                                        <option value="OnTrac">OnTrac</option>
-                                                        <option value="LaserShip">LaserShip</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-input" v-model="item.code"
-                                                        placeholder="请输入" style="width: 100%;">
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <!-- 邮编表格 -->
+                                <div class="modal-form-row" style="align-items:flex-start;">
+                                    <label class="modal-form-label" style="margin-top:6px;">邮编<span
+                                            class="required">*</span></label>
+                                    <div style="flex:1;">
+                                        <table class="config-table" style="width:100%;font-size:12px;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="action-cell" style="padding:4px;">+</th>
+                                                    <th style="text-align:center;padding:4px;">#</th>
+                                                    <th style="text-align:center;padding:4px;">快递公司</th>
+                                                    <th style="text-align:center;padding:4px;">邮编</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(item, index) in postalCodes" :key="index">
+                                                    <td class="action-cell" style="padding:2px;">
+                                                        <button class="btn-icon btn-add" @click="addPostalCode"
+                                                            title="新增行">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <line x1="12" y1="8" x2="12" y2="16" />
+                                                                <line x1="8" y1="12" x2="16" y2="12" />
+                                                            </svg>
+                                                        </button>
+                                                        <button class="btn-icon btn-delete"
+                                                            @click="removePostalCode(index)" title="删除">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <line x1="8" y1="12" x2="16" y2="12" />
+                                                            </svg>
+                                                        </button>
+                                                    </td>
+                                                    <td style="text-align:center;padding:2px;">{{ index + 1 }}</td>
+                                                    <td style="padding:2px;">
+                                                        <select class="form-input" v-model="item.courier"
+                                                            style="width:100%;padding:3px 6px;font-size:12px;">
+                                                            <option value="">请选择</option>
+                                                            <option value="UPS">UPS</option>
+                                                            <option value="FedEx">FedEx</option>
+                                                            <option value="USPS">USPS</option>
+                                                            <option value="DHL">DHL</option>
+                                                            <option value="Amazon Logistics">Amazon Logistics</option>
+                                                            <option value="OnTrac">OnTrac</option>
+                                                            <option value="LaserShip">LaserShip</option>
+                                                        </select>
+                                                    </td>
+                                                    <td style="padding:2px;">
+                                                        <input type="text" class="form-input" v-model="item.code"
+                                                            placeholder="请输入"
+                                                            style="width:100%;padding:3px 6px;font-size:12px;">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="form-item">
-                                <label class="form-label">备注</label>
-                                <input type="text" class="form-input" v-model="warehouseForm.remark" placeholder="请输入">
-                            </div>
-                            <div class="form-item">
-                                <label class="form-label">状态<span class="required">*</span></label>
-                                <select class="form-input" v-model="warehouseForm.status">
-                                    <option value="">请选择</option>
-                                    <option value="enabled">启用</option>
-                                    <option value="disabled">禁用</option>
-                                </select>
+                                <!-- 备注 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">备注</label>
+                                    <input type="text" class="modal-form-input" v-model="warehouseForm.remark"
+                                        placeholder="请输入">
+                                </div>
+                                <!-- 状态 -->
+                                <div class="modal-form-row">
+                                    <label class="modal-form-label">状态<span class="required">*</span></label>
+                                    <select class="modal-form-input" v-model="warehouseForm.status">
+                                        <option value="">请选择</option>
+                                        <option value="enabled">启用</option>
+                                        <option value="disabled">禁用</option>
+                                    </select>
+                                </div>
+                                <!-- 保存按钮 -->
+                                <div
+                                    style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid #eee;">
+                                    <button class="btn btn-primary" style="padding:5px 20px;font-size:12px;"
+                                        @click="submitWarehouse">保存</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2684,6 +2831,7 @@
                     { label: '已租箱', value: 'rented_container' },
                     { label: '已入仓(港前)', value: 'beputinstorage' },
                     { label: '已退仓', value: 'bereturnstorage' },
+                    { label: '已派车', value: 'sendacar' },
                     { label: '已提空柜', value: 'extractemptybox' },
                     { label: '已收提单单证', value: 'receivedbilldocs' },
                     { label: '已发pre alert', value: 'prealert' },
@@ -2906,9 +3054,22 @@
                         })
                     }
 
-                    // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，需在已放舱之后附加专属的已提空柜、已装柜、已还重柜
+                    // 特殊情况下，如果是 海运整柜 (ocean-fcl) 和 铁运整柜 (rail-fcl)，需在已放舱之后附加专属的已派车、已提空柜、已装柜、已还重柜
                     if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl') {
                         rows.push({
+                            id: idCounter++,
+                            status: 'sendacar',
+                            statusCode: 'SENDACAR',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
                             id: idCounter++,
                             status: 'extractemptybox',
                             statusCode: 'EMPTY CONTIANER',
@@ -3569,6 +3730,15 @@
                         isFixed: true
                     })
 
+                    // 自动将已有的 trackName/trackCode 转为 platforms 数据
+                    rows.forEach(row => {
+                        if (row.trackName && row.trackCode) {
+                            row.platforms = [{ name: '亚马逊shiptrack', code: row.trackCode, enabled: true }]
+                        } else {
+                            row.platforms = []
+                        }
+                    })
+
                     return rows
                 }
 
@@ -3646,13 +3816,7 @@
                 }
 
                 const onEnabledChange = (changedItem) => {
-                    if (isDefaultTrack(changedItem.trackName)) {
-                        configItems.value.forEach(item => {
-                            if (isDefaultTrack(item.trackName)) {
-                                item.enabled = changedItem.enabled
-                            }
-                        })
-                    }
+                    // 用户要求：是否启用是独立的，去除之前的联动逻辑
                 }
 
                 const addRow = (index) => { configItems.value.splice(index + 1, 0, createEmptyRow()) }
@@ -4313,11 +4477,38 @@
                     showToast('✓ 保存成功')
                 }
 
+                // ========== 平台配置弹窗 ==========
+                const platformConfigVisible = ref(false)
+                const platformConfigItem = ref(null)
+                const platformConfigList = reactive([])
+
+                const openPlatformConfig = (item) => {
+                    platformConfigItem.value = item
+                    if (!item.platforms) item.platforms = []
+                    platformConfigList.length = 0
+                    item.platforms.forEach(p => platformConfigList.push({ ...p }))
+                    platformConfigVisible.value = true
+                }
+
+                const closePlatformConfig = () => {
+                    platformConfigVisible.value = false
+                    platformConfigItem.value = null
+                }
+
+                const savePlatformConfig = () => {
+                    if (platformConfigItem.value) {
+                        platformConfigItem.value.platforms = platformConfigList.filter(p => p.name || p.code).map(p => ({ ...p }))
+                    }
+                    closePlatformConfig()
+                    showToast('平台配置已保存')
+                }
+
                 return {
                     currentPage, currentTransport, currentType, currentSubType,
                     configItems, statusOptions, trackNameOptions, toast,
                     saveConfig, resetConfig, addRow, deleteRow,
                     isDefaultTrack, getAvailableStatusOptions, onStatusChange, onTrackNameChange, onEnabledChange,
+                    platformConfigVisible, platformConfigItem, platformConfigList, openPlatformConfig, closePlatformConfig, savePlatformConfig,
                     nodeForm, countryOptions, cityOptions, enabledTrackOptions, currentDateTime, minDateTime, isYueCang, todayDateTime, maxFutureDateTime,
                     onCountryChange, onNodeTrackStatusChange, resetNodeForm, submitNode,
                     demoForm, warehouseOptions, warehouseInfo, onWarehouseChange, addDemoNode, pushDemo,
