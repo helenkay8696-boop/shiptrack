@@ -2833,6 +2833,8 @@
                     { label: '已退仓', value: 'bereturnstorage' },
                     { label: '遗漏装柜/装板', value: 'missedstowage' },
                     { label: '已派车', value: 'sendacar' },
+                    { label: '已到岗', value: 'onduty' },
+                    { label: '已装车', value: 'encasement_land' },
                     { label: '已提空柜', value: 'extractemptybox' },
                     { label: '已收提单单证', value: 'receivedbilldocs' },
                     { label: '已发pre alert', value: 'prealert' },
@@ -2868,8 +2870,15 @@
                     { label: '已发车', value: 'dispatched' },
                     { label: '已到港', value: 'arrived' },
                     { label: '已到站', value: 'arrived_station' },
+                    { label: '始发站到站', value: 'departuretoarrival' },
+                    { label: '始发站离站', value: 'stationdeparture' },
+                    { label: '到站(中转)', value: 'arrivaltransfer' },
+                    { label: '离站(中转)', value: 'departuretransit' },
+                    { label: '目的站到站', value: 'arrivalatdestination' },
                     { label: '已进口清关', value: 'clearance' },
                     { label: '已进口放行', value: 'import_released' },
+                    { label: '已出境', value: 'departed_land' },
+                    { label: '已倒装', value: 'rehandled' },
                     { label: '押单', value: 'detainreceipts' },
                     { label: 'HBL扣货', value: 'hbldetentionofcargo' },
                     { label: 'MBL扣货', value: 'mbldetentionofcargo' },
@@ -2887,6 +2896,7 @@
                     { label: '已发送DS', value: 'sentdeliveryschedule' },
                     { label: '派送中', value: 'delivery' },
                     { label: '派送异常', value: 'deliveryfail' },
+                    { label: '已运抵', value: 'arribeddeliverd' },
                     { label: '已签收', value: 'clientsign' },
                     { label: '分批送仓', value: 'batch_delivery' },
                     { label: '已费用确认', value: 'fees_confirmed' },
@@ -3006,6 +3016,63 @@
                         isFixed: true
                     }]
 
+                    // 陆运整车(land-fcl)在已受理之后增加 已派车、已到岗、已提货、已装车
+                    if (transportKey === 'land-fcl') {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'sendacar',
+                            statusCode: 'SENDACAR',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'onduty',
+                            statusCode: 'ONDUTY',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'pickupgoods',
+                            statusCode: 'PICKUPGOODS',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '揽收',
+                            trackCode: 'AF/NS',
+                            node: '揽收',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'encasement_land',
+                            statusCode: 'ENCASEMENT',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '拖车',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+                    }
+
                     // 海运整柜(ocean-fcl)、铁运整柜(rail-fcl)、空运散货(air-lcl)需额外带有已订舱、已放舱（其他散货不需要）
                     if (transportKey === 'ocean-fcl' || transportKey === 'rail-fcl' || transportKey === 'air-lcl') {
                         rows.push({
@@ -3089,8 +3156,8 @@
                             statusCode: 'ENCASEMENT',
                             customTrackName: '',
                             customTrackNameEn: '',
-                            trackName: '',
-                            trackCode: '',
+                            trackName: '揽收',
+                            trackCode: 'AF/NS',
                             node: '拖车',
                             portType: '港前',
                             enabled: true,
@@ -3219,6 +3286,49 @@
                             pushEnabled: true,
                             isFixed: true
                         })
+
+                        if (transportKey === 'land-lcl') {
+                            rows.push({
+                                id: idCounter++,
+                                status: 'sendacar',
+                                statusCode: 'SENDACAR',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '拖车',
+                                portType: '港前',
+                                enabled: true,
+                                pushEnabled: true,
+                                isFixed: true
+                            }, {
+                                id: idCounter++,
+                                status: 'onduty',
+                                statusCode: 'ONDUTY',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '拖车',
+                                portType: '港前',
+                                enabled: true,
+                                pushEnabled: true,
+                                isFixed: true
+                            }, {
+                                id: idCounter++,
+                                status: 'encasement_land',
+                                statusCode: 'ENCASEMENT',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '拖车',
+                                portType: '港前',
+                                enabled: true,
+                                pushEnabled: true,
+                                isFixed: true
+                            })
+                        }
 
                         if (transportKey === 'air-lcl') {
                             rows.push({
@@ -3370,8 +3480,8 @@
                         })
                     }
 
-                    // 铁运、陆运最终环节追加已进站、已发车
-                    if (transportKey.startsWith('rail') || transportKey.startsWith('land')) {
+                    // 铁运最终环节追加已进站、已发车
+                    if (transportKey.startsWith('rail')) {
                         rows.push({
                             id: idCounter++,
                             status: 'in_station',
@@ -3437,8 +3547,8 @@
                         })
                     }
 
-                    // 铁运、陆运追加专属到站(港)节点
-                    if (transportKey.startsWith('rail') || transportKey.startsWith('land')) {
+                    // 铁运追加专属到站(港)节点
+                    if (transportKey.startsWith('rail')) {
                         rows.push({
                             id: idCounter++,
                             status: 'arrived_station',
@@ -3449,6 +3559,82 @@
                             trackCode: 'UR/NS',
                             node: '干线',
                             portType: '港后',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+                    }
+
+                    // 陆运专属：始发站到站、始发站离站、(零担独有中转)、目的站到站
+                    if (transportKey.startsWith('land')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'departuretoarrival',
+                            statusCode: 'DEPARTURETOARRIVAL',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'stationdeparture',
+                            statusCode: 'STATIONDEPARTURE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+
+                        if (transportKey === 'land-lcl') {
+                            rows.push({
+                                id: idCounter++,
+                                status: 'arrivaltransfer',
+                                statusCode: 'ARRIVALTRANSFER',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '干线',
+                                portType: '港后',
+                                enabled: true,
+                                pushEnabled: true,
+                                isFixed: true
+                            }, {
+                                id: idCounter++,
+                                status: 'departuretransit',
+                                statusCode: 'DEPARTURETRANSIT',
+                                customTrackName: '',
+                                customTrackNameEn: '',
+                                trackName: '',
+                                trackCode: '',
+                                node: '干线',
+                                portType: '港后',
+                                enabled: true,
+                                pushEnabled: true,
+                                isFixed: true
+                            })
+                        }
+
+                        rows.push({
+                            id: idCounter++,
+                            status: 'arrivalatdestination',
+                            statusCode: 'ARRIVALATDESTINATION',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '干线',
+                            portType: '港前',
                             enabled: true,
                             pushEnabled: true,
                             isFixed: true
@@ -3496,6 +3682,37 @@
                         pushEnabled: true,
                         isFixed: true
                     })
+
+                    // 陆运专属：在已进口放行之后新增已出境、已倒装
+                    if (transportKey.startsWith('land')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'departed_land',
+                            statusCode: 'DEPARTED',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '清关',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        }, {
+                            id: idCounter++,
+                            status: 'rehandled',
+                            statusCode: 'REHANDLED',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '清关',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+                    }
 
                     // 海运整柜(ocean-fcl)专有放货节点
                     if (transportKey === 'ocean-fcl') {
@@ -3729,7 +3946,27 @@
                         enabled: true,
                         pushEnabled: true,
                         isFixed: true
-                    }, {
+                    })
+
+                    // 陆运专属：在已签收之前增加已运抵
+                    if (transportKey.startsWith('land')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'arribeddeliverd',
+                            statusCode: 'ARRIBEDDELIVERD',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '',
+                            trackCode: '',
+                            node: '派送',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+                    }
+
+                    rows.push({
                         id: idCounter++,
                         status: 'clientsign',
                         statusCode: 'CLIENTSIGN',
@@ -3752,6 +3989,32 @@
                             row.platforms = []
                         }
                     })
+
+                    // 陆运专属平台配置：追加“歌尔”及轨迹编码
+                    if (transportKey.startsWith('land')) {
+                        const goerConfig = {
+                            'sendacar': '10',
+                            'onduty': '20',
+                            'pickupgoods': '30',
+                            'departuretoarrival': '40',
+                            'stationdeparture': '50',
+                            'arrivaltransfer': '60',
+                            'departuretransit': '70',
+                            'arrivalatdestination': '80',
+                            'delivery': '90',
+                            'arribeddeliverd': '100',
+                            'clientsign': '110'
+                        }
+                        rows.forEach(row => {
+                            if (goerConfig[row.status]) {
+                                row.platforms.push({
+                                    name: '歌尔',
+                                    code: goerConfig[row.status],
+                                    enabled: true
+                                })
+                            }
+                        })
+                    }
 
                     return rows
                 }
