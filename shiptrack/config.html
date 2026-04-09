@@ -1897,6 +1897,15 @@
                                                     v-model="receivingChannelForm.taxType" value="none"> 不限制</label>
                                         </div>
                                     </div>
+                                    <div class="rc-item">
+                                        <label class="rc-label">推送shiptrack</label>
+                                        <div class="rc-radio-group" style="padding-top: 6px;">
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.pushShiptrack" :value="true"> 是</label>
+                                            <label class="rc-radio-item"><input type="radio"
+                                                    v-model="receivingChannelForm.pushShiptrack" :value="false"> 否</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -2065,6 +2074,7 @@
                                             <option value="">请选择</option>
                                             <option value="下单到签收">下单到签收</option>
                                             <option value="入仓到签收">入仓到签收</option>
+                                            <option value="离港到签收">离港到签收</option>
                                         </select>
                                     </div>
                                     <div style="flex: 1;">
@@ -2682,12 +2692,22 @@
                                         <input type="text" class="dm-input dm-w200"
                                             v-model="deliveryModifyForm.isaNumber" placeholder="请输入ISA预约号">
                                     </div>
+                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'truck'">
+                                        <label class="dm-label">拿约日期</label>
+                                        <input type="date" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.appointmentDate" :max="todayDateOnly">
+                                    </div>
 
                                     <!-- 亚马逊自提显示亚马逊订单号 -->
                                     <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'amazon'">
                                         <label class="dm-label">亚马逊订单号</label>
                                         <input type="text" class="dm-input dm-w200"
                                             v-model="deliveryModifyForm.amazonOrderNo" placeholder="请输入亚马逊订单号">
+                                    </div>
+                                    <div class="dm-row" v-if="deliveryModifyForm.lastMileMethod === 'amazon'">
+                                        <label class="dm-label">拿约日期</label>
+                                        <input type="date" class="dm-input dm-w200"
+                                            v-model="deliveryModifyForm.appointmentDate" :max="todayDateOnly">
                                     </div>
                                 </div>
 
@@ -3599,7 +3619,7 @@
                             rows.push({
                                 id: idCounter++,
                                 status: 'arrivaltransfer',
-                                statusCode: 'ARRIVALTRANSFER',
+                                statusCode: 'TRANARRIVALSTATION',
                                 customTrackName: '',
                                 customTrackNameEn: '',
                                 trackName: '',
@@ -3612,7 +3632,7 @@
                             }, {
                                 id: idCounter++,
                                 status: 'departuretransit',
-                                statusCode: 'DEPARTURETRANSIT',
+                                statusCode: 'TRANLEAVESTATION',
                                 customTrackName: '',
                                 customTrackNameEn: '',
                                 trackName: '',
@@ -4338,6 +4358,12 @@
                     return future.toISOString().slice(0, 16)
                 })
 
+                // 今天纯日期（用于拿约日期限制）
+                const todayDateOnly = computed(() => {
+                    const now = new Date()
+                    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0')
+                })
+
                 // ========== 揽收推送字段 ==========
                 const demoForm = reactive({
                     warehouse: '',
@@ -4547,6 +4573,7 @@
                     zipCode: '',
                     // 右列
                     isaNumber: '',
+                    appointmentDate: '',
                     tailCarrier: '',
                     tailTrackingNumber: '',
                     currentArea: '',
@@ -4701,6 +4728,7 @@
                     receivableCargo: '',
                     receivableCargoType: '',
                     taxType: '',
+                    pushShiptrack: true,
                     mustUploadPod: false,
                     billingType: '',
                     isActualVolumeWeight: false,
@@ -4786,7 +4814,7 @@
                     saveConfig, resetConfig, addRow, deleteRow,
                     isDefaultTrack, getAvailableStatusOptions, onStatusChange, onTrackNameChange, onEnabledChange,
                     platformConfigVisible, platformConfigItem, platformConfigList, openPlatformConfig, closePlatformConfig, savePlatformConfig,
-                    nodeForm, countryOptions, cityOptions, enabledTrackOptions, currentDateTime, minDateTime, isYueCang, todayDateTime, maxFutureDateTime,
+                    nodeForm, countryOptions, cityOptions, enabledTrackOptions, currentDateTime, minDateTime, isYueCang, todayDateTime, maxFutureDateTime, todayDateOnly,
                     onCountryChange, onNodeTrackStatusChange, resetNodeForm, submitNode,
                     demoForm, warehouseOptions, warehouseInfo, onWarehouseChange, addDemoNode, pushDemo,
                     departureForm, pushDeparture,
