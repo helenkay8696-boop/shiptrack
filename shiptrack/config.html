@@ -1400,6 +1400,157 @@
             color: #999;
             font-size: 14px;
         }
+        /* 国家选择器弹出层 */
+        .rc-select-custom {
+            position: relative;
+            cursor: pointer;
+            flex: 1;
+        }
+        .rc-select-display {
+            min-height: 32px;
+            padding: 4px 30px 4px 12px;
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        .rc-select-placeholder {
+            color: #bfbfbf;
+        }
+        .rc-select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bfbfbf;
+        }
+        .rc-select-popover {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            width: 100%;
+            max-height: 300px;
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .rc-country-option {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .rc-country-option:hover {
+            background: #f5f5f5;
+        }
+        .rc-country-option input {
+            cursor: pointer;
+        }
+        /* 标签样式 */
+        .rc-tag {
+            background: #f0f0f0;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            padding: 0 4px;
+            font-size: 12px;
+            color: #555;
+        }
+        .rc-range-config {
+            margin-top: 15px;
+            border-top: 1px dashed #eee;
+            padding-top: 15px;
+        }
+        .rc-range-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .rc-range-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #eef2f5;
+            border-radius: 4px;
+            overflow: hidden;
+            font-size: 13px;
+        }
+        .rc-range-table th {
+            background: #f8fbfc;
+            color: #666;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eef2f5;
+        }
+        .rc-range-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eef2f5;
+            color: #333;
+        }
+        .btn-add-range {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #1890ff;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-remove-range {
+            color: #ff4d4f;
+            cursor: pointer;
+        }
+        .range-modal-list {
+            max-height: 400px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 15px 0;
+        }
+        .range-modal-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #fff;
+        }
+        .range-modal-item.selected {
+            background: #e6f7ff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        .btn-confirm {
+            padding: 6px 20px;
+            background: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -1519,8 +1670,10 @@
                                         @click="currentSubType = 'rail'">铁运</span>
                                     <span class="type-tab" :class="{ active: currentSubType === 'land' }"
                                         @click="currentSubType = 'land'">陆运</span>
-                                    <span class="type-tab right-tab" :class="{ active: currentSubType === 'purchase' }"
-                                        @click="currentSubType = 'purchase'">代采</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'purchase' }" @click="currentSubType = 'purchase'">代采</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'customs' }" @click="currentSubType = 'customs'">报关</span>
+                                    <span class="type-tab" :class="{ active: currentSubType === 'fumigation' }" @click="currentSubType = 'fumigation'">熏蒸</span>
+                                    <span class="type-tab right-tab" :class="{ active: currentSubType === 'other' }" @click="currentSubType = 'other'">其他</span>
                                 </div>
                                 <div class="header-actions">
                                     <button class="btn" @click="resetConfig">重置</button>
@@ -1644,8 +1797,37 @@
                         </div>
                     </div>
 
-                    <!-- 平台配置弹窗 -->
-                    <div v-if="platformConfigVisible" class="modal-overlay" @click.self="closePlatformConfig">
+                        <!-- 适用范围选择弹窗 -->
+                        <div v-if="showRangeModal" class="modal-overlay" @click.self="closeRangeModal">
+                            <div class="modal-dialog" style="width: 500px;">
+                                <div class="modal-header">
+                                    <span class="modal-title">添加适用省/州</span>
+                                    <button class="modal-close" @click="closeRangeModal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div style="font-size: 12px; color: #999; margin-bottom: 15px;">
+                                        已选国家：{{ receivingChannelForm.countries.length > 0 ? receivingChannelForm.countries.join(', ') : '未选择（展示默认数据）' }}
+                                    </div>
+                                    <div class="range-modal-list">
+                                        <div v-for="p in availableProvinces" :key="p.shortName" 
+                                             class="range-modal-item" 
+                                             :class="{ selected: receivingChannelForm.rangeList.some(r => r.shortName === p.shortName) }"
+                                             @click="addRangeItem(p)">
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 14px;">{{ p.shortName }}</div>
+                                                <div style="color: #666; font-size: 12px;">{{ p.fullName }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn-confirm" @click="closeRangeModal">完成</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 平台配置弹窗 -->
+                        <div v-if="platformConfigVisible" class="modal-overlay" @click.self="closePlatformConfig">
                         <div class="modal-dialog" style="width: 600px;">
                             <div class="modal-header">
                                 <span class="modal-title">配置轨迹编码及开关: {{ platformConfigItem?.status ?
@@ -1885,6 +2067,25 @@
                                         </select>
                                     </div>
                                     <div class="rc-item">
+                                        <label class="rc-label">国家</label>
+                                        <div class="rc-select-custom" ref="countrySelectRef" @click.stop="toggleCountrySelect">
+                                            <div class="rc-select-display">
+                                                <span v-if="receivingChannelForm.countries.length === 0" class="rc-select-placeholder">请选择国家</span>
+                                                <span v-else v-for="c in receivingChannelForm.countries.slice(0, 3)" :key="c" class="rc-tag">
+                                                    {{ channelCountryOptions.find(opt => opt.value === c)?.label }}
+                                                </span>
+                                                <span v-if="receivingChannelForm.countries.length > 3" class="rc-tag">+{{ receivingChannelForm.countries.length - 3 }}</span>
+                                            </div>
+                                            <span class="rc-select-arrow">▼</span>
+                                            <div class="rc-select-popover" v-if="showCountrySelect" @click.stop>
+                                                <label v-for="opt in channelCountryOptions" :key="opt.value" class="rc-country-option">
+                                                    <input type="checkbox" v-model="receivingChannelForm.countries" :value="opt.value">
+                                                    <span>{{ opt.label }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="rc-item">
                                         <label class="rc-label">计税方式</label>
                                         <div class="rc-radio-group">
                                             <label class="rc-radio-item"><input type="radio"
@@ -2014,7 +2215,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div style="padding: 0 10px;">
+                                <div v-if="receivingChannelForm.deliveryMethod === 'truck'" style="padding: 0 10px;">
                                     <div class="rc-rule-row">
                                         <div class="rc-rule-label">单箱任意边长</div>
                                         <span>最小</span><input type="number" class="rc-input rc-range-input"
@@ -2057,6 +2258,72 @@
                                                 v-model="receivingChannelForm.boxVolumeLimitAction" value="notify">
                                             超过提醒</label>
                                     </div>
+                                </div>
+                                <div v-if="receivingChannelForm.deliveryMethod === 'express'" style="padding: 10px;">
+                                    <div class="rc-item">
+                                        <label class="rc-label">快递公司</label>
+                                        <div class="rc-select-custom" ref="expressCompanySelectRef" @click.stop="toggleExpressCompanySelect">
+                                            <div class="rc-select-display">
+                                                <span v-if="receivingChannelForm.tailCarriers.length === 0" class="rc-select-placeholder">请选择快递公司</span>
+                                                <span v-else v-for="c in receivingChannelForm.tailCarriers.slice(0, 5)" :key="c" class="rc-tag">
+                                                    {{ expressCompanyOptions.find(opt => opt.value === c)?.label }}
+                                                </span>
+                                                <span v-if="receivingChannelForm.tailCarriers.length > 5" class="rc-tag">+{{ receivingChannelForm.tailCarriers.length - 5 }}</span>
+                                            </div>
+                                            <span class="rc-select-arrow">▼</span>
+                                            <div class="rc-select-popover" v-if="showExpressCompanySelect" @click.stop>
+                                                <label v-for="opt in expressCompanyOptions" :key="opt.value" class="rc-country-option">
+                                                    <input type="checkbox" v-model="receivingChannelForm.tailCarriers" :value="opt.value">
+                                                    <span>{{ opt.label }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 适用派送范围 -->
+                                <div class="rc-range-config">
+                                    <div class="rc-range-header">
+                                        <div style="display: flex; align-items: center; gap: 20px;">
+                                            <span style="font-size: 14px; font-weight: 500; color: #333;">适用派送范围</span>
+                                            <div class="rc-radio-group">
+                                                <label class="rc-radio-item">
+                                                    <input type="radio" v-model="receivingChannelForm.rangeType" value="all" @change="handleRangeTypeChange"> 全部
+                                                </label>
+                                                <label class="rc-radio-item">
+                                                    <input type="radio" v-model="receivingChannelForm.rangeType" value="include" @change="handleRangeTypeChange"> 指定派送范围
+                                                </label>
+                                                <label class="rc-radio-item">
+                                                    <input type="radio" v-model="receivingChannelForm.rangeType" value="exclude" @change="handleRangeTypeChange"> 排除派送范围
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button v-if="receivingChannelForm.rangeType !== 'all'" class="btn-add-range" @click="openRangeModal">
+                                            <span>+</span> 添加范围
+                                        </button>
+                                    </div>
+
+                                    <table v-if="receivingChannelForm.rangeType !== 'all'" class="rc-range-table">
+                                        <thead>
+                                            <tr>
+                                                <th>省/州全称</th>
+                                                <th>省/州简称</th>
+                                                <th style="width: 80px; text-align: center;">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="receivingChannelForm.rangeList.length === 0">
+                                                <td colspan="3" style="text-align: center; color: #999; padding: 30px;">暂未添加范围，请点击上方按钮添加</td>
+                                            </tr>
+                                            <tr v-for="(item, index) in receivingChannelForm.rangeList" :key="index">
+                                                <td>{{ item.fullName }}</td>
+                                                <td>{{ item.shortName }}</td>
+                                                <td style="text-align: center;">
+                                                    <span class="btn-remove-range" @click="removeRangeItem(index)">删除</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
@@ -2838,7 +3105,7 @@
                     enabled: false
                 })
 
-                const statusOptions = [
+                const baseStatusOptions = [
                     { label: '已下单', value: 'placed' },
                     { label: '已取消', value: 'cancelled' },
                     { label: '已受理', value: 'accepted' },
@@ -2934,6 +3201,18 @@
                     { label: '已结转', value: 'carried_over' },
                 ]
 
+                const statusOptions = computed(() => {
+                    const isAir = currentTransport.value === 'air' || (['bill', 'finance'].includes(currentTransport.value) && currentSubType.value === 'air');
+                    if (isAir) {
+                        return baseStatusOptions.map(opt => {
+                            if (opt.value === 'hblaffirmfakeorder') return { ...opt, label: 'HAWB确认草单' };
+                            if (opt.value === 'mblaffirmfakeorder') return { ...opt, label: 'MAWB确认草单' };
+                            return opt;
+                        });
+                    }
+                    return baseStatusOptions;
+                });
+
                 const trackData = [
                     { name: '揽收', code: 'AF/NS', node: '揽收', portType: '港前' },
                     { name: '已出口报关', code: 'K1/O1', node: '报关', portType: '港前' },
@@ -2947,7 +3226,7 @@
                     { name: '进口放行', code: 'K2/RD', node: '清关', portType: '港后' },
                     { name: '拆柜', code: 'X4/FN', node: '海外仓', portType: '港后' },
                     { name: '已约交FBX仓', code: 'AG/AG', node: '海外仓', portType: '港后' },
-                    { name: '已签收', code: 'D1/NS', node: '海外仓', portType: '港后' },
+                    { name: '已签收', code: 'D1/NS', node: '派送', portType: '港后' },
                     { name: '分批送仓', code: '1X/NS', node: '海外仓', portType: '港后' },
                 ]
 
@@ -2963,10 +3242,6 @@
                             { id: idCounter++, status: 'prealert', statusCode: 'PREALERT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'informsuppfood', statusCode: 'INFORMSUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'receivesuppfood', statusCode: 'RECEIVESUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
-                            { id: idCounter++, status: 'comparisonorder', statusCode: 'COMPARISONORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
-                            { id: idCounter++, status: 'hblmatchanorder', statusCode: 'HBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
-                            { id: idCounter++, status: 'mblmatchanorder', statusCode: 'MBLMATCHANORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
-                            { id: idCounter++, status: 'affirmreceipt', statusCode: 'AFFIRMRECEIPT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'hblaffirmfakeorder', statusCode: 'HBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'mblaffirmfakeorder', statusCode: 'MBLAFFIRMFAKEORDER', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'send_ams', statusCode: 'SEND_AMS', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
@@ -3901,20 +4176,24 @@
                     }
 
                     // 作为所有节点（含独有枝干）全部跑完之后的纯正收关之末：追加全局最新已约交FBX仓、已出仓(港后)、已派送
+                    if (!transportKey.startsWith('rail')) {
+                        rows.push({
+                            id: idCounter++,
+                            status: 'entrytfbxwarehouse',
+                            statusCode: 'ENTRYTFBXWAREHOUSE',
+                            customTrackName: '',
+                            customTrackNameEn: '',
+                            trackName: '已约交FBX仓',
+                            trackCode: 'AG/AG',
+                            node: '海外仓',
+                            portType: '港后',
+                            enabled: true,
+                            pushEnabled: true,
+                            isFixed: true
+                        })
+                    }
+
                     rows.push({
-                        id: idCounter++,
-                        status: 'entrytfbxwarehouse',
-                        statusCode: 'ENTRYTFBXWAREHOUSE',
-                        customTrackName: '',
-                        customTrackNameEn: '',
-                        trackName: '已约交FBX仓',
-                        trackCode: 'AG/AG',
-                        node: '海外仓',
-                        portType: '港后',
-                        enabled: true,
-                        pushEnabled: true,
-                        isFixed: true
-                    }, {
                         id: idCounter++,
                         status: 'outtransferwarehouse',
                         statusCode: 'OUTTRANSFERWAREHOUSE',
@@ -3994,7 +4273,7 @@
                         customTrackNameEn: '',
                         trackName: '已签收',
                         trackCode: 'D1/NS',
-                        node: '',
+                        node: '派送',
                         portType: '港后',
                         enabled: true,
                         pushEnabled: true,
@@ -4055,7 +4334,10 @@
                     'finance-air': createDefaultRows('finance-air'),
                     'finance-rail': createDefaultRows('finance-rail'),
                     'finance-land': createDefaultRows('finance-land'),
-                    'finance-purchase': createDefaultRows('finance-purchase')
+                    'finance-purchase': createDefaultRows('finance-purchase'),
+                    'finance-customs': createDefaultRows('finance-customs'),
+                    'finance-fumigation': createDefaultRows('finance-fumigation'),
+                    'finance-other': createDefaultRows('finance-other')
                 })
 
                 const activeKey = computed(() => {
@@ -4079,12 +4361,12 @@
 
                 const getAvailableStatusOptions = (currentItem) => {
                     const usedStatuses = configItems.value.map(i => i.status).filter(s => s && s !== currentItem.status)
-                    return statusOptions.filter(opt => !usedStatuses.includes(opt.value))
+                    return statusOptions.value.filter(opt => !usedStatuses.includes(opt.value))
                 }
 
                 const onStatusChange = (item) => {
                     item.statusCode = item.status
-                    const label = statusOptions.find(o => o.value === item.status)?.label
+                    const label = statusOptions.value.find(o => o.value === item.status)?.label
                     const info = trackData.find(t => t.name === label)
                     if (info) {
                         item.trackName = info.name
@@ -4203,7 +4485,7 @@
                     const statuses = currentItems.filter(i => i.status).map(i => i.status)
                     const duplicateStatus = statuses.find((s, idx) => statuses.indexOf(s) !== idx)
                     if (duplicateStatus) {
-                        const label = statusOptions.find(o => o.value === duplicateStatus)?.label || duplicateStatus
+                        const label = statusOptions.value.find(o => o.value === duplicateStatus)?.label || duplicateStatus
                         showToast(`当前分类：状态 "${label}" 重复`, true)
                         return
                     }
@@ -4267,7 +4549,7 @@
                         .filter(item => item.enabled && item.status && item.trackName)
                         .map(item => ({
                             status: item.status,
-                            statusLabel: statusOptions.find(o => o.value === item.status)?.label || item.status,
+                            statusLabel: statusOptions.value.find(o => o.value === item.status)?.label || item.status,
                             trackName: item.trackName,
                             trackCode: item.trackCode
                         }))
@@ -4702,20 +4984,121 @@
                     { label: '日本', value: 'JP' },
                     { label: '德国', value: 'DE' },
                     { label: '法国', value: 'FR' },
+                    { label: '荷兰', value: 'NL' },
+                    { label: '意大利', value: 'IT' },
+                    { label: '西班牙', value: 'ES' },
+                    { label: '墨西哥', value: 'MX' },
+                    { label: '越南', value: 'VN' },
+                    { label: '泰国', value: 'TH' },
+                    { label: '马来西亚', value: 'MY' },
                 ])
                 const toggleCountrySelect = () => {
                     showCountrySelect.value = !showCountrySelect.value
+                    if (showCountrySelect.value) showExpressCompanySelect.value = false
                 }
-                const closeCountrySelect = (e) => {
+                
+                const showExpressCompanySelect = ref(false)
+                const expressCompanySelectRef = ref(null)
+                const expressCompanyOptions = ref([
+                    { label: 'UPS', value: 'UPS' },
+                    { label: 'FedEx', value: 'FedEx' },
+                    { label: 'USPS', value: 'USPS' },
+                    { label: 'DHL', value: 'DHL' },
+                    { label: 'Ontrac', value: 'Ontrac' },
+                    { label: 'Lasership', value: 'Lasership' },
+                ])
+
+                const toggleExpressCompanySelect = () => {
+                    showExpressCompanySelect.value = !showExpressCompanySelect.value
+                    if (showExpressCompanySelect.value) showCountrySelect.value = false
+                }
+
+                // 省/州数据源
+                const provinceData = {
+                    'US': [
+                        { fullName: 'California', shortName: 'CA' },
+                        { fullName: 'New York', shortName: 'NY' },
+                        { fullName: 'Texas', shortName: 'TX' },
+                        { fullName: 'Florida', shortName: 'FL' },
+                        { fullName: 'Washington', shortName: 'WA' },
+                        { fullName: 'Illinois', shortName: 'IL' },
+                        { fullName: 'Georgia', shortName: 'GA' },
+                        { fullName: 'Ohio', shortName: 'OH' },
+                        { fullName: 'Pennsylvania', shortName: 'PA' },
+                        { fullName: 'Michigan', shortName: 'MI' }
+                    ],
+                    'CA': [
+                        { fullName: 'Ontario', shortName: 'ON' },
+                        { fullName: 'Quebec', shortName: 'QC' },
+                        { fullName: 'British Columbia', shortName: 'BC' },
+                        { fullName: 'Alberta', shortName: 'AB' }
+                    ],
+                    'GB': [
+                        { fullName: 'Greater London', shortName: 'GL' },
+                        { fullName: 'West Midlands', shortName: 'WM' },
+                        { fullName: 'Greater Manchester', shortName: 'GM' }
+                    ],
+                    'DE': [
+                        { fullName: 'Bavaria', shortName: 'BY' },
+                        { fullName: 'Berlin', shortName: 'BE' },
+                        { fullName: 'Hamburg', shortName: 'HH' }
+                    ]
+                }
+
+                const showRangeModal = ref(false)
+                const availableProvinces = computed(() => {
+                    let provinces = []
+                    receivingChannelForm.countries.forEach(countryCode => {
+                        if (provinceData[countryCode]) {
+                            provinces = provinces.concat(provinceData[countryCode].map(p => ({
+                                ...p,
+                                countryCode: countryCode
+                            })))
+                        }
+                    })
+                    if (provinces.length === 0) {
+                        return provinceData['US'] || []
+                    }
+                    return provinces
+                })
+
+                const handleRangeTypeChange = () => {
+                    receivingChannelForm.rangeList = []
+                }
+
+                const openRangeModal = () => {
+                    showRangeModal.value = true
+                }
+
+                const closeRangeModal = () => {
+                    showRangeModal.value = false
+                }
+
+                const addRangeItem = (p) => {
+                    if (!receivingChannelForm.rangeList.some(item => item.shortName === p.shortName)) {
+                        receivingChannelForm.rangeList.push({ ...p })
+                    }
+                }
+
+                const removeRangeItem = (index) => {
+                    receivingChannelForm.rangeList.splice(index, 1)
+                }
+
+
+
+                const closePopovers = (e) => {
                     if (countrySelectRef.value && !countrySelectRef.value.contains(e.target)) {
                         showCountrySelect.value = false
                     }
+                    if (expressCompanySelectRef.value && !expressCompanySelectRef.value.contains(e.target)) {
+                        showExpressCompanySelect.value = false
+                    }
                 }
                 onMounted(() => {
-                    document.addEventListener('click', closeCountrySelect)
+                    document.addEventListener('click', closePopovers)
                 })
                 onUnmounted(() => {
-                    document.removeEventListener('click', closeCountrySelect)
+                    document.removeEventListener('click', closePopovers)
                 })
 
                 const receivingChannelForm = reactive({
@@ -4752,6 +5135,9 @@
                     boxWeightLimitAction: '',
                     boxVolumeMin: '',
                     boxVolumeMax: '',
+                    tailCarriers: [],
+                    rangeType: 'all',
+                    rangeList: [],
                     boxVolumeUnit: 'CBM',
                     boxVolumeLimitAction: '',
                     departureReminderDays: '',
@@ -4809,6 +5195,7 @@
                 }
 
                 return {
+                    receivingChannelForm, availableProvinces, handleRangeTypeChange, openRangeModal, closeRangeModal, addRangeItem, removeRangeItem, showRangeModal,
                     currentPage, currentTransport, currentType, currentSubType,
                     configItems, statusOptions, trackNameOptions, toast,
                     saveConfig, resetConfig, addRow, deleteRow,
@@ -4822,7 +5209,7 @@
                     bookingForm, pushBooking,
                     warehouseForm, submitWarehouse, postalCodes, addPostalCode, removePostalCode,
                     deliveryModifyTab, deliveryModifyForm, copyDeliveryInfo,
-                    nodeOptions: ['揽收', '拖车', '报关', '干线', '清关', '海外仓'],
+                    nodeOptions: ['揽收', '拖车', '报关', '干线', '清关', '海外仓', '派送'],
                     portTypeOptions: ['港前', '港后'],
                     customTrackItems, addFirstCustomTrackRow, addCustomTrackRow, deleteCustomTrackRow, saveCustomTrack, onCustomTrackNameChange,
                     showTemplateModal, templateForm, templateTags, openTemplateModal, closeTemplateModal, insertTag, restoreTrackName, restoreTrackNameEn,
