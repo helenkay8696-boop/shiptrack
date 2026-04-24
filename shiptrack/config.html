@@ -3238,7 +3238,7 @@
 
                 const createDefaultRows = (transportKey = '') => {
                     if (transportKey.startsWith('bill')) {
-                        return [
+                        let billRows = [
                             { id: idCounter++, status: 'prealert', statusCode: 'PREALERT', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'informsuppfood', statusCode: 'INFORMSUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'receivesuppfood', statusCode: 'RECEIVESUPPFOOD', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
@@ -3251,7 +3251,12 @@
                             { id: idCounter++, status: 'sendclearancefile', statusCode: 'SENDCLEARANCEFILE', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'sendbilloflading', statusCode: 'SENDBILLOFLADING', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true },
                             { id: idCounter++, status: 'senddo', statusCode: 'SENDDO', customTrackName: '', customTrackNameEn: '', trackName: '', trackCode: '', node: '单证', portType: '', enabled: true, pushEnabled: true, isFixed: true }
-                        ]
+                        ];
+                        if (transportKey.includes('rail') || transportKey.includes('land')) {
+                            const excludeStatuses = ['hblaffirmfakeorder', 'mblaffirmfakeorder', 'send_ams', 'sendisf', 'mbloriginalmail'];
+                            billRows = billRows.filter(row => !excludeStatuses.includes(row.status));
+                        }
+                        return billRows;
                     }
                     if (transportKey.startsWith('finance')) {
                         return [
