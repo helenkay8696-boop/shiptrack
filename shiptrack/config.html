@@ -2393,6 +2393,12 @@
                                             v-model="receivingChannelForm.unloadingReminderDays" placeholder="请输入">
                                         <span class="rc-unit">天仍未倒装则提醒</span>
                                     </div>
+                                    <div class="rc-item">
+                                        <span class="rc-unit" style="margin-right: 4px;">已拆柜</span>
+                                        <input type="number" class="rc-input rc-range-input"
+                                            v-model="receivingChannelForm.unpackedReminderDays" placeholder="请输入">
+                                        <span class="rc-unit">天未签收则提醒</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -2950,6 +2956,11 @@
                                             <label class="dm-label">快递单号</label>
                                             <input type="text" class="dm-input dm-w200"
                                                 v-model="deliveryModifyForm.tailTrackingNumber" placeholder="请输入">
+                                        </div>
+                                        <div class="dm-row">
+                                            <label class="dm-label">快递揽收时间</label>
+                                            <input type="date" class="dm-input dm-w200"
+                                                v-model="deliveryModifyForm.tailCollectionTime" placeholder="选择日期">
                                         </div>
                                     </template>
 
@@ -4863,6 +4874,7 @@
                     appointmentDate: '',
                     tailCarrier: '',
                     tailTrackingNumber: '',
+                    tailCollectionTime: '',
                     currentArea: '',
                     areaType: '',
                     cargoRemark: '',
@@ -5147,6 +5159,7 @@
                     boxVolumeLimitAction: '',
                     departureReminderDays: '',
                     unloadingReminderDays: '',
+                    unpackedReminderDays: '',
                     timelinessSelection: '',
                     timelinessType: '参考时效',
                     timelinessUnit: '',
